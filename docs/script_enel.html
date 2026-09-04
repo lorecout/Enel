@@ -72,6 +72,13 @@
     .faq-item strong { color: #0056b3; }
     .faq-item ul { margin: 4px 0 0 16px; }
     .faq-item li { margin-bottom: 3px; }
+
+    /* Cabine Primária / Subestação Consumidora */
+    .cab-intro { font-size: 12.5px; line-height: 1.55; color: #333; margin-bottom: 10px; }
+    .cab-intro strong { color: #0056b3; }
+    ol.check { margin: 4px 0 0 18px; }
+    ol.check li { margin-bottom: 4px; }
+    .crm-tpl { background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-family: Consolas, 'Courier New', monospace; font-size: 11px; line-height: 1.5; white-space: pre-wrap; color: #1c1e21; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -174,6 +181,47 @@
         <div class="cat-body">
           <div class="faq-item"><strong>Equipamentos:</strong> compressor de geladeira/freezer, placa lógica/mãe de TV, fonte do computador, placa de comando do portão elétrico.</div>
           <div class="faq-item"><strong>Relatos comuns:</strong> vários “picos” de luz e o motor da geladeira parou; chuva com raios queimou TV, roteador e portão “de estalo”.</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- CARD CABINE PRIMÁRIA -->
+    <div class="card">
+      <div class="info-title">🏢 Cabine Primária (Subestação Consumidora)</div>
+      <p class="cab-intro">Cabine primária = subestação consumidora de clientes de <strong>média tensão (Grupo A, ex.: 13,8 kV)</strong>: indústrias, shoppings, supermercados, hospitais e edifícios comerciais.</p>
+      <details class="cat-item">
+        <summary>🏗️ Estrutura operacional</summary>
+        <div class="cat-body">
+          <div class="faq-item"><strong>1. Ponto de entrada</strong> — interface entre a rede da concessionária e a instalação interna: cabos de entrada, mufla terminal, chave seccionadora de entrada.</div>
+          <div class="faq-item"><strong>2. Medição</strong> — registro do consumo no lado da média tensão: medidor de MT, TPs (transformadores de potencial), TCs (transformadores de corrente).</div>
+          <div class="faq-item"><strong>3. Proteção</strong> — isola o circuito em sobrecarga, surto ou curto-circuito: disjuntor geral de AT (PVO/vácuo), relés de proteção, chaves fusíveis internas, para-raios.</div>
+          <div class="faq-item"><strong>4. Transformação</strong> — converte a tensão (ex.: 13,8 kV) para baixa tensão (380V/220V ou 220V/127V): transformador a óleo ou a seco, barramento de BT, quadro geral de distribuição (QGD).</div>
+        </div>
+      </details>
+      <details class="cat-item">
+        <summary>🗣️ Como o cliente relata</summary>
+        <div class="cat-body">
+          <div class="faq-item"><strong>“Desarmou o disjuntor geral da cabine”</strong> — atuação do sistema de proteção interno ou da rede.</div>
+          <div class="faq-item"><strong>“Fumaça ou cheiro de óleo queimado na casa de força/subestação”</strong> — risco grave no transformador ou nas chaves.</div>
+          <div class="faq-item"><strong>“A canela/chave da entrada da rua caiu”</strong> — atuação da proteção da Enel na chegada da rede externa.</div>
+          <div class="faq-item"><strong>“A energia está em meia fase/fase caídas na cabine”</strong> — falha em uma ou duas fases da média tensão.</div>
+        </div>
+      </details>
+      <details class="cat-item">
+        <summary>📋 Checklist do operador + modelo CRM</summary>
+        <div class="cat-body">
+          <ol class="check">
+            <li><strong>Classificação:</strong> confirmar se é cliente de alta/média tensão (Grupo A).</li>
+            <li><strong>Identificação de risco:</strong> há chamas, fumaça, estalo forte ou vazamento de óleo?</li>
+            <li><strong>Equipe interna:</strong> o eletricista/engenheiro do cliente já inspecionou a cabine?</li>
+            <li><strong>Registro no CRM</strong> com o modelo abaixo.</li>
+          </ol>
+          <div class="crm-tpl">[OCORRÊNCIA EM CABINE PRIMÁRIA - GRUPO A]
+- SITUAÇÃO: [Desarme geral / Fumaça / Fase caída / Ruído anormal]
+- LOCALIZAÇÃO: Subestação consumidora do imóvel
+- TENSÃO DE ENTRADA: Média Tensão (13,8 kV)
+- RISCO DE INCÊNDIO/SEGURANÇA: [Sim / Não]
+- ENCAMINHAMENTO: Despacho prioritário para equipe de alta/média tensão.</div>
         </div>
       </details>
     </div>
