@@ -316,10 +316,11 @@
       <details class="cat-item">
         <summary>🔌 4. Solicitação de Religamento</summary>
         <div class="cat-body">
-          <em>Restabelecimento após suspensão. Prazos: 24h (urbana) / 48h (rural) / 4h (urgência).</em>
+          <em>Restabelecimento após suspensão (ANEEL REN 1.000, Art. 362). Prazos: 24h (urbana) / 48h (rural); urgência: 4h (urbana) / 8h (rural).</em>
           <ul class="cat-tipos">
             <li><strong>Religação normal</strong> — quitação comprovada (Pix ou boleto) e acesso ao medidor.</li>
             <li><strong>Religação de urgência</strong> — taxa de serviço onde disponível e horário limite da região.</li>
+            <li><strong>Religação por suspensão indevida</strong> — restabelecimento em até 4h, sem custo.</li>
           </ul>
         </div>
       </details>
@@ -336,10 +337,10 @@
           <div class="flow-title-line">🧾 Fluxo oficial do processo</div>
           <div class="flow-step"><span class="flow-num">1</span><div><strong>Solicitação</strong> — o ingresso deve ocorrer em até <strong>5 anos</strong> após a data do dano.</div></div>
           <div class="flow-step"><span class="flow-num">2</span><div><strong>Análise da solicitação</strong> — investigação da ocorrência.</div></div>
-          <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — a concessionária pode realizar vistoria técnica no local (até 10 dias úteis; 1 dia útil para conservação de alimentos/medicamentos).</div></div>
+          <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — verificação ou retirada dos equipamentos danificados em até 10 dias; 1 dia útil quando acondicionarem alimentos perecíveis ou medicamentos.</div></div>
           <div class="flow-step"><span class="flow-num">4</span><div><strong>Orçamentos/Laudos</strong> — o cliente tem <strong>90 dias corridos</strong> para entregar orçamentos/laudos e documentos complementares (ex.: nota fiscal, quando solicitado).</div></div>
           <div class="flow-step"><span class="flow-num">5</span><div><strong>Resposta</strong> — até <strong>15 dias corridos</strong> (ingresso em até 90 dias do dano) ou <strong>30 dias corridos</strong> (ingresso após 90 dias).</div></div>
-          <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até <strong>20 dias</strong> após o prazo da resposta.</div></div>
+          <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até <strong>20 dias corridos</strong> após a resposta (REN 1.000); a Enel SP antecipa em até <strong>3 dias úteis</strong> quando os dados bancários estão corretos.</div></div>
         </div>
       </details>
 
@@ -527,7 +528,7 @@ var FLUXOS = {
     cat: 'RELIGAMENTO',
     nome: 'Religação Normal',
     titulo: 'RELIGAMENTO - NORMAL',
-    orient: 'Ordem de religação aberta. Orientado a manter o disjuntor geral DESLIGADO até a chegada da equipe.',
+    orient: 'Ordem de religação aberta (prazo: até 24h urbana / 48h rural - ANEEL REN 1.000, Art. 362). Orientado a manter o disjuntor geral DESLIGADO até a chegada da equipe.',
     passos: [
       { pergunta: 'Como o débito foi quitado?', campo: 'Quitação do débito', opcoes: [
         ['✅ Pix baixado em sistema', 'PIX BAIXADO EM SISTEMA'],
@@ -547,15 +548,31 @@ var FLUXOS = {
     cat: 'RELIGAMENTO',
     nome: 'Religação de Urgência',
     titulo: 'RELIGAMENTO - URGÊNCIA',
-    orient: 'Religamento de urgência aberto com prazo de até 4h. Informar sobre a taxa de serviço de urgência, onde disponível.',
+    orient: 'Religamento de urgência aberto. Prazo (ANEEL REN 1.000, Art. 362): até 4h em área urbana ou 8h em área rural. Informar sobre a taxa de serviço de urgência, onde disponível.',
     passos: [
       { pergunta: 'Como o débito foi quitado?', campo: 'Quitação do débito', opcoes: [
         ['✅ Pix baixado em sistema', 'PIX BAIXADO EM SISTEMA'],
         ['📄 Boleto - comprovante validado', 'BOLETO - COMPROVANTE VALIDADO']
       ] },
+      { pergunta: 'Qual a área do imóvel? (define o prazo regulatório da urgência)', campo: 'Área', opcoes: [
+        ['🏙️ Urbana - religação de urgência em até 4h', 'URBANA (4H)'],
+        ['🌾 Rural - religação de urgência em até 8h', 'RURAL (8H)']
+      ] },
       { pergunta: 'A solicitação está dentro do horário limite de urgência da região?', campo: 'Horário limite', opcoes: [
         ['⏰ Sim - urgência disponível (taxa aplicável)', 'DENTRO DO HORÁRIO LIMITE'],
         ['🌙 Não - seguir o prazo normal', 'FORA DO HORÁRIO LIMITE']
+      ] }
+    ]
+  },
+  religSuspensao: {
+    cat: 'RELIGAMENTO',
+    nome: 'Religação por Suspensão Indevida',
+    titulo: 'RELIGAMENTO - SUSPENSÃO INDEVIDA',
+    orient: 'Suspensão indevida identificada: restabelecimento em até 4h, sem custo (ANEEL REN 1.000, Art. 362, I). Registrar o protocolo e, se não religado em 4h, orientar o acionamento da ANEEL (167).',
+    passos: [
+      { pergunta: 'Como o cliente identifica a suspensão indevida?', campo: 'Suspensão indevida', opcoes: [
+        ['🚫 Suspenso mesmo com pagamento em dia', 'PAGAMENTO EM DIA - SUSPENSÃO INDEVIDA'],
+        ['❌ Suspenso sem aviso prévio', 'SEM AVISO PRÉVIO']
       ] }
     ]
   },
@@ -589,7 +606,7 @@ var TIPOS_POR_CAT = {
   EMERGENCIA: ['fioCaido', 'fogoRede', 'posteCaido'],
   MEDIDOR: ['medFogo', 'medChoque', 'medVisor', 'medLacre'],
   VITAL: ['vitalFalta', 'vitalCadastro'],
-  RELIGAMENTO: ['religNormal', 'religUrgencia'],
+  RELIGAMENTO: ['religNormal', 'religUrgencia', 'religSuspensao'],
   CABINE: ['cabine']
 };
 
@@ -1014,16 +1031,16 @@ function renderPid() {
     <h3 style="margin-top:8px;">💻 Orientação ao Cliente (Ressarcimento)</h3>
     <div class="speech-box">"Entendido. Para tratar de ressarcimento de danos elétricos, o(a) senhor(a) deve fazer o laudo do equipamento com um perito de confiança e ir até a loja presencial, levando o laudo, o equipamento danificado e a nota fiscal. Não abrimos registro por telefone: apenas informamos que o atendimento é feito na loja, onde serão passadas as orientações e os prazos."</div>
     <div class="note">⚠️ Este atendimento não gera registro no CRM - apenas orientação e encaminhamento à loja.</div>
-    <div class="ref-note">🔒 Consulta interna do agente: não repasse os prazos do processo na ligação. A loja presencial informa as orientações e os prazos ao cliente.</div>
+    <div class="ref-note">🔒 Consulta interna do agente: não repasse os prazos do processo na ligação. A loja presencial informa as orientações e os prazos ao cliente.<br>📎 Fonte: ANEEL REN 1.000/2021 e enel.com.br (Solicitação de Ressarcimento).</div>
     <details class="ref-box">
       <summary>🧾 Fluxo oficial do pedido de ressarcimento (consulta)</summary>
       <div class="ref-body">
         <div class="flow-step"><span class="flow-num">1</span><div><strong>Solicitação</strong> — o ingresso deve ocorrer em até 5 anos após a data do dano.</div></div>
         <div class="flow-step"><span class="flow-num">2</span><div><strong>Análise da solicitação</strong> — investigação da ocorrência.</div></div>
-        <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — a concessionária pode realizar vistoria técnica no local (até 10 dias úteis; 1 dia útil para conservação de alimentos/medicamentos).</div></div>
+        <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — verificação ou retirada dos equipamentos danificados em até 10 dias; 1 dia útil quando acondicionarem alimentos perecíveis ou medicamentos.</div></div>
         <div class="flow-step"><span class="flow-num">4</span><div><strong>Orçamentos/Laudos</strong> — o cliente tem 90 dias corridos para entregar orçamentos/laudos e documentos complementares (ex.: nota fiscal, quando solicitado).</div></div>
         <div class="flow-step"><span class="flow-num">5</span><div><strong>Resposta</strong> — até 15 dias corridos (ingresso em até 90 dias do dano) ou 30 dias corridos (ingresso após 90 dias).</div></div>
-        <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até 20 dias após o prazo da resposta.</div></div>
+        <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até 20 dias corridos após a resposta (REN 1.000); a Enel SP antecipa em até 3 dias úteis quando os dados bancários estão corretos.</div></div>
       </div>
     </details>
     <div class="btn-group">
