@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Atendimento e Guia Enel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #eef2f5; color: #1c1e21; padding: 20px; }
+
+    /* Layout em 2 Colunas */
+    .container { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
+    .main-panel { flex: 2; }
+    .side-panel { flex: 1; }
+
+    /* Cards e Estilo */
+    .card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .badge { background: #0056b3; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+    .badge.red { background: #dc3545; }
+    .badge.green { background: #28a745; }
+    .speech-box { background: #e7f3ff; border-left: 5px solid #1877f2; padding: 12px; margin: 15px 0; font-style: italic; font-size: 14px; line-height: 1.4; }
+
+    /* Botões */
+    .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+    button { background: #1877f2; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 14px; font-weight: 600; transition: 0.2s; }
+    button:hover { background: #166fe5; }
+    button.emer { background: #dc3545; }
+    button.emer:hover { background: #bd2130; }
+    button.ok { background: #28a745; }
+    button.ok:hover { background: #218838; }
+    .reset-btn { background: #6c757d; text-align: center; width: 100%; margin-top: 10px; }
+    .reset-btn:hover { background: #5a6268; }
+    .back-btn { background: transparent; color: #0056b3; border: 1px solid #b8d4f0; padding: 8px 12px; font-size: 13px; font-weight: normal; margin-bottom: 10px; }
+    .back-btn:hover { background: #e7f3ff; }
+
+    textarea { width: 100%; height: 150px; margin-top: 10px; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; }
+    .note { font-size: 12px; color: #555; margin-top: 8px; }
+
+    /* Seção Informativa Lateral */
+    .info-title { font-size: 16px; font-weight: bold; color: #0056b3; border-bottom: 2px solid #0056b3; padding-bottom: 5px; margin-bottom: 12px; }
+    .phone-box { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 15px; }
+    .golden { background: #fff3cd; border: 1px solid #ffe69c; color: #664d03; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.5; margin-bottom: 14px; }
+    .golden strong { color: #b02a37; }
+
+    .cat-item { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; overflow: hidden; background: #fff; }
+    .cat-item summary { list-style: none; cursor: pointer; padding: 10px 12px; font-weight: bold; font-size: 13px; color: #0056b3; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; }
+    .cat-item summary::-webkit-details-marker { display: none; }
+    .cat-item summary::after { content: '▾'; color: #999; }
+    .cat-item[open] summary { border-bottom: 1px solid #eee; }
+    .cat-item[open] summary::after { transform: rotate(180deg); }
+    .cat-body { padding: 10px 12px; font-size: 12.5px; line-height: 1.6; color: #333; }
+    .cat-body .cat-tipos { margin-top: 6px; padding-left: 16px; }
+    .cat-body .cat-tipos li { margin-bottom: 3px; }
+    .cat-body em { color: #555; }
+
+    /* Fluxo oficial do ressarcimento (PID) */
+    .ref-note { font-size: 11px; color: #c2185b; background: #fdf0f6; border: 1px dashed #d4006e; padding: 8px 10px; border-radius: 6px; margin: 12px 0; line-height: 1.5; }
+    details.ref-box { border: 1px dashed #d4006e; border-radius: 6px; margin-top: 12px; overflow: hidden; background: #fffafc; }
+    details.ref-box summary { list-style: none; cursor: pointer; padding: 10px 12px; font-weight: bold; font-size: 13px; color: #d4006e; background: #fdf0f6; display: flex; justify-content: space-between; align-items: center; }
+    details.ref-box summary::-webkit-details-marker { display: none; }
+    details.ref-box summary::after { content: '▾'; color: #d4006e; }
+    details.ref-box[open] summary { border-bottom: 1px dashed #d4006e; }
+    details.ref-box[open] summary::after { transform: rotate(180deg); }
+    .ref-body { padding: 10px 12px; font-size: 12.5px; line-height: 1.6; }
+    .flow-step { display: flex; gap: 8px; margin-bottom: 8px; }
+    .flow-step:last-child { margin-bottom: 0; }
+    .flow-num { flex: none; width: 20px; height: 20px; border-radius: 50%; background: #d4006e; color: #fff; font-size: 11px; font-weight: bold; text-align: center; line-height: 20px; margin-top: 1px; }
+    .flow-title-line { font-size: 12px; font-weight: bold; color: #c2185b; margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+
+    /* Card FAQ - Atendimento por Telefone */
+    .faq-item { font-size: 12.5px; line-height: 1.55; color: #333; margin-bottom: 12px; }
+    .faq-item:last-child { margin-bottom: 0; }
+    .faq-item strong { color: #0056b3; }
+    .faq-item ul { margin: 4px 0 0 16px; }
+    .faq-item li { margin-bottom: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- COLUNA PRINCIPAL: SCRIPT INTERATIVO -->
+  <div class="main-panel">
+    <div class="card" id="app"></div>
+  </div>
+
+  <!-- COLUNA LATERAL: INFORMAÇÕES E GUIA RÁPIDO ENEL -->
+  <div class="side-panel">
+
+    <!-- CARD DE CANAIS E TELEFONES -->
+    <div class="card">
+      <div class="info-title">📞 Telefones e Canais Oficiais Enel</div>
+      <div class="phone-box">
+        <strong>Central de Atendimento:</strong> 0800 72 72 120<br>
+        <strong>Emergência / Deficientes Auditivos:</strong> 0800 77 28 626<br>
+        <strong>Corpo de Bombeiros:</strong> 193 | <strong>SAMU:</strong> 192
+      </div>
+    </div>
+
+    <!-- CARD FAQ - ATENDIMENTO POR TELEFONE -->
+    <div class="card">
+      <div class="info-title">📋 FAQ - Atendimento por Telefone</div>
+      <div class="faq-item">
+        <strong>Antes de registrar falta de energia</strong>, confirme com o cliente:
+        <ul>
+          <li>Recebeu aviso de desligamento programado (manutenção da rede)?</li>
+          <li>Chaves e disjuntores internos do imóvel estão funcionando?</li>
+        </ul>
+      </div>
+      <div class="faq-item">
+        <strong>Tenha sempre o número de instalação em mãos</strong> (consta na conta de energia) — é a identificação do cliente em todos os canais de atendimento.
+      </div>
+      <div class="faq-item">
+        <strong>Cliente vital / eletrodependente:</strong> o cadastro é feito em qualquer loja de atendimento, pelo titular da conta ou familiares, apresentando o atestado médico que comprove a necessidade de uso de equipamentos essenciais à vida.
+      </div>
+    </div>
+
+    <!-- CARD DAS 5 CATEGORIAS OPERACIONAIS -->
+    <div class="card">
+      <div class="info-title">🗂️ As 5 Categorias de Atendimento</div>
+
+      <div class="golden">
+        <strong>Regra de Ouro (Segurança):</strong> NUNCA confirme que o fio está desenergizado. Sempre oriente o cliente a manter 10m de distância.
+      </div>
+
+      <details class="cat-item">
+        <summary>🚨 1. Ocorrências Emergenciais</summary>
+        <div class="cat-body">
+          <em>Risco de vida, segurança pública ou colapso na rede. Resposta imediata de equipe.</em>
+          <ul class="cat-tipos">
+            <li><strong>Fio caído/partido</strong> — endereço, ponto de referência, contato com estrutura/veículo e bloqueio de via.</li>
+            <li><strong>Faíscas/fumaça/fogo na rede</strong> — local da chama e proximidade com imóveis/vegetação.</li>
+            <li><strong>Poste caído/abalroado</strong> — estado da estrutura, fios no chão e obstrução do trânsito.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="cat-item">
+        <summary>⚡ 2. Ocorrências no Medidor</summary>
+        <div class="cat-body">
+          <em>Equipamento de medição do imóvel — emergências e falhas técnicas.</em>
+          <ul class="cat-tipos">
+            <li><strong>Fogo/faísca/cheiro de queimado</strong> — despacho emergencial prioritário.</li>
+            <li><strong>Risco de choque na caixa/muro</strong> — prevenção de acidentes.</li>
+            <li><strong>Visor apagado/embaçado/travado</strong> — verificação técnica com energia normal.</li>
+            <li><strong>Lacre rompido/ausente</strong> — regularização da selagem técnica.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="cat-item">
+        <summary>🏥 3. Cliente Vital (Eletrodependente)</summary>
+        <div class="cat-body">
+          <em>Prioridade absoluta. Equipamentos de suporte à vida alimentados por energia.</em>
+          <ul class="cat-tipos">
+            <li><strong>Falta de energia (cadastro ativo)</strong> — chamado emergencial com prioridade máxima.</li>
+            <li><strong>Novo cadastro vital</strong> — laudo médico com CID, relatório do equipamento e documentos do titular.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="cat-item">
+        <summary>🔌 4. Solicitação de Religamento</summary>
+        <div class="cat-body">
+          <em>Restabelecimento após suspensão. Prazos: 24h (urbana) / 48h (rural) / 4h (urgência).</em>
+          <ul class="cat-tipos">
+            <li><strong>Religação normal</strong> — quitação comprovada (Pix ou boleto) e acesso ao medidor.</li>
+            <li><strong>Religação de urgência</strong> — taxa de serviço onde disponível e horário limite da região.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="cat-item">
+        <summary>💻 5. Ressarcimento de Danos (PID)</summary>
+        <div class="cat-body">
+          <em>Não é aberto registro por telefone neste atendimento.</em>
+          <ul class="cat-tipos">
+            <li>Orientar o cliente a fazer o laudo do equipamento com um perito de confiança.</li>
+            <li>Comparecer à loja presencial com o equipamento danificado e a nota fiscal (se tiver).</li>
+            <li>Os prazos e as orientações do processo são informados pela própria loja.</li>
+          </ul>
+          <div class="flow-title-line">🧾 Fluxo oficial do processo</div>
+          <div class="flow-step"><span class="flow-num">1</span><div><strong>Solicitação</strong> — o ingresso deve ocorrer em até <strong>5 anos</strong> após a data do dano.</div></div>
+          <div class="flow-step"><span class="flow-num">2</span><div><strong>Análise da solicitação</strong> — investigação da ocorrência.</div></div>
+          <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — a concessionária pode realizar vistoria técnica no local (até 10 dias úteis; 1 dia útil para conservação de alimentos/medicamentos).</div></div>
+          <div class="flow-step"><span class="flow-num">4</span><div><strong>Orçamentos/Laudos</strong> — o cliente tem <strong>90 dias corridos</strong> para entregar orçamentos/laudos e documentos complementares (ex.: nota fiscal, quando solicitado).</div></div>
+          <div class="flow-step"><span class="flow-num">5</span><div><strong>Resposta</strong> — até <strong>15 dias corridos</strong> (ingresso em até 90 dias do dano) ou <strong>30 dias corridos</strong> (ingresso após 90 dias).</div></div>
+          <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até <strong>20 dias</strong> após o prazo da resposta.</div></div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Fluxos declarativos (guia das 5 categorias) =====
+   Cada ocorrência: titulo (CRM), orient (fala final), condOrient (troca a
+   orientação quando uma resposta específica for dada) e passos (perguntas
+   que coletam os "dados exigidos" antes do resumo). */
+
+var FLUXOS = {
+  /* ---------- 1. EMERGENCIAIS ---------- */
+  fioCaido: {
+    cat: 'EMERGENCIA',
+    nome: 'Fio Caído / Partido',
+    titulo: 'EMERGÊNCIA - FIO CAÍDO / PARTIDO',
+    orient: 'Mantenha distância mínima de 10 metros e não toque na fiação. Afaste pessoas e animais. Todo fio deve ser considerado energizado.',
+    passos: [
+      { pergunta: 'O fio está tocando alguma estrutura, veículo ou apenas o chão?', campo: 'Fio em contato com', opcoes: [
+        ['🟢 No chão / passeio', 'CHÃO/PASSEIO'],
+        ['🚗 Sobre veículo', 'VEÍCULO'],
+        ['🏠 Sobre imóvel / estrutura', 'IMÓVEL/ESTRUTURA']
+      ] },
+      { pergunta: 'A via pública está bloqueada por causa da ocorrência?', campo: 'Bloqueio de via', opcoes: [
+        ['🛑 Sim - trânsito impedido', 'SIM'],
+        ['🟢 Não - passagem livre', 'NÃO']
+      ] }
+    ]
+  },
+  fogoRede: {
+    cat: 'EMERGENCIA',
+    nome: 'Faíscas, Fumaça ou Fogo na Rede',
+    titulo: 'EMERGÊNCIA - FAÍSCAS/FOGO NA REDE',
+    orient: 'Isolamento da área orientado. Se houver risco a imóveis ou vegetação, acionar o Corpo de Bombeiros (193). Não jogar água em equipamentos energizados.',
+    passos: [
+      { pergunta: 'Onde está a chama ou o ponto de fumaça?', campo: 'Local da chama', opcoes: [
+        ['🌳 No poste', 'POSTE'],
+        ['〰️ Na fiação', 'FIAÇÃO'],
+        ['🔲 No transformador', 'TRANSFORMADOR']
+      ] },
+      { pergunta: 'Há imóveis ou vegetação próximos ao fogo?', campo: 'Proximidade de risco', opcoes: [
+        ['🏠 Imóveis ou vegetação próximos', 'IMÓVEIS/VEGETAÇÃO PRÓXIMOS'],
+        ['🟢 Sem risco próximo', 'SEM RISCO PRÓXIMO']
+      ] }
+    ]
+  },
+  posteCaido: {
+    cat: 'EMERGENCIA',
+    nome: 'Poste Caído / Abalroado',
+    titulo: 'EMERGÊNCIA - POSTE CAÍDO/ABALROADO',
+    orient: 'Afaste pessoas e veículos da estrutura. Não toque nos fios presos ao poste.',
+    passos: [
+      { pergunta: 'Qual o estado da estrutura do poste?', campo: 'Estado do poste', opcoes: [
+        ['↘️ Inclinado / com risco de queda', 'INCLINADO/RISCO DE QUEDA'],
+        ['🪵 Totalmente caído', 'TOTALMENTE CAÍDO']
+      ] },
+      { pergunta: 'Há fios no chão na área do poste?', campo: 'Fios no chão', opcoes: [
+        ['SIM - fios caídos', 'SIM'],
+        ['NÃO - fios suspensos', 'NÃO']
+      ] },
+      { pergunta: 'A estrutura está obstruindo o trânsito?', campo: 'Obstrução de trânsito', opcoes: [
+        ['🛑 Sim - via obstruída', 'SIM'],
+        ['🟢 Não - trânsito livre', 'NÃO']
+      ] }
+    ]
+  },
+
+  /* ---------- 2. MEDIDOR ---------- */
+  medFogo: {
+    cat: 'MEDIDOR',
+    nome: 'Fogo, Faísca ou Cheiro de Queimado',
+    titulo: 'MEDIDOR - FOGO/FAÍSCA/CHEIRO DE QUEIMADO',
+    orient: 'Risco de incêndio. Orientado a não tocar no medidor nem no disjuntor, manter distância e afastar pessoas. Se houver chamas ativas, acionar o Corpo de Bombeiros (193).',
+    passos: [
+      { pergunta: 'Há chamas ativas no medidor agora?', campo: 'Chamas ativas', opcoes: [
+        ['🔥 Sim - chamas visíveis', 'SIM'],
+        ['🟢 Não', 'NÃO']
+      ] },
+      { pergunta: 'A caixa está expelindo fumaça ou muito quente?', campo: 'Fumaça/caixa quente', opcoes: [
+        ['💨 Sim - fumaça ou calor intenso', 'SIM'],
+        ['🟢 Não', 'NÃO']
+      ] }
+    ]
+  },
+  medChoque: {
+    cat: 'MEDIDOR',
+    nome: 'Risco de Choque na Caixa ou Muro',
+    titulo: 'MEDIDOR - RISCO DE CHOQUE NA CAIXA/MURO',
+    orient: 'Não encostar na caixa nem em superfícies metálicas próximas. Se alguém sofreu descarga elétrica, acionar o SAMU (192) e o Corpo de Bombeiros (193) e não tocar na vítima enquanto estiver em contato com a rede.',
+    passos: [
+      { pergunta: 'Onde está localizada a caixa energizada?', campo: 'Local da caixa', opcoes: [
+        ['🧱 Na mureta / muro', 'MURO/MURETA'],
+        ['🏠 Na fachada do imóvel', 'FACHADA'],
+        ['📦 Outro ponto', 'OUTRO LOCAL']
+      ] },
+      { pergunta: 'Alguém já sofreu descarga elétrica no local?', campo: 'Descarga elétrica', opcoes: [
+        ['🚨 Sim - houve vítima', 'SIM - VÍTIMA'],
+        ['🟢 Não', 'NÃO']
+      ] }
+    ]
+  },
+  medVisor: {
+    cat: 'MEDIDOR',
+    nome: 'Visor Apagado, Embaçado ou Travado',
+    titulo: 'MEDIDOR - VISOR APAGADO/EMBAÇADO/TRAVADO',
+    orient: 'Solicitação de verificação/substituição do medidor aberta. Orientado a manter o equipamento intacto.',
+    condOrient: { campo: 'Energia no imóvel', valor: 'SEM ENERGIA', texto: 'O imóvel está sem energia: orientar o registro de falta de energia pela rede e verificar se há cliente vital no endereço.' },
+    passos: [
+      { pergunta: 'O imóvel permanece com fornecimento de energia normal?', campo: 'Energia no imóvel', opcoes: [
+        ['⚡ Sim - energia normal (apenas o visor com defeito)', 'ENERGIA NORMAL'],
+        ['⛔ Não - imóvel sem energia', 'SEM ENERGIA']
+      ] }
+    ]
+  },
+  medLacre: {
+    cat: 'MEDIDOR',
+    nome: 'Lacre Rompido ou Ausente',
+    titulo: 'MEDIDOR - LACRE ROMPIDO/AUSENTE',
+    orient: 'Agendamento da regularização da selagem técnica. Orientado a não manipular a fiação e aguardar a equipe.',
+    passos: [
+      { pergunta: 'Há sinais de manipulação na fiação interna do medidor?', campo: 'Sinais de manipulação', opcoes: [
+        ['⚠️ Sim - sinais de intervenção', 'SIM'],
+        ['🟢 Não', 'NÃO'],
+        ['❓ Não sabe informar', 'NÃO SABE INFORMAR']
+      ] }
+    ]
+  },
+
+  /* ---------- 3. CLIENTE VITAL ---------- */
+  vitalFalta: {
+    cat: 'VITAL',
+    nome: 'Falta de Energia (Cadastro Ativo)',
+    titulo: 'CLIENTE VITAL - FALTA DE ENERGIA (CADASTRO ATIVO)',
+    orient: 'Chamado emergencial aberto com prioridade máxima de atendimento. Orientado a manter o equipamento em bateria/fonte alternativa e evitar abrir portas de geladeiras sem necessidade.',
+    passos: [
+      { pergunta: 'Qual equipamento de suporte vital está em uso no domicílio?', campo: 'Equipamento em uso', opcoes: [
+        ['🫁 Respirador', 'RESPIRADOR'],
+        ['💨 Concentrador de O2', 'CONCENTRADOR DE O2'],
+        ['🩺 Diálise', 'DIÁLISE'],
+        ['😴 CPAP / BiPAP', 'CPAP/BIPAP'],
+        ['➕ Outro equipamento', 'OUTRO EQUIPAMENTO']
+      ] },
+      { pergunta: 'Qual a situação da bateria/fonte alternativa?', campo: 'Bateria/fonte alternativa', opcoes: [
+        ['🔋 Sim - disponível e carregada', 'SIM - DISPONÍVEL'],
+        ['⚠️ Sim - porém com pouca carga', 'SIM - POUCA CARGA'],
+        ['❌ Não possui bateria', 'NÃO POSSUI']
+      ] }
+    ]
+  },
+  vitalCadastro: {
+    cat: 'VITAL',
+    nome: 'Solicitação de Novo Cadastro Vital',
+    titulo: 'CLIENTE VITAL - NOVO CADASTRO',
+    orient: 'Orientado a enviar laudo médico com CID, relatório do equipamento e os documentos do titular pelo site/WhatsApp. O cadastro concede prioridade no atendimento e aviso prévio em desligamentos programados.',
+    passos: [
+      { pergunta: 'O cliente possui o laudo médico com CID em mãos?', campo: 'Laudo médico com CID', opcoes: [
+        ['✅ Sim - possui o laudo', 'POSSUI O LAUDO'],
+        ['📋 Ainda não possui', 'NÃO POSSUI AINDA']
+      ] },
+      { pergunta: 'Qual o canal de envio dos documentos?', campo: 'Canal de envio', opcoes: [
+        ['🌐 Site oficial', 'SITE OFICIAL'],
+        ['💬 WhatsApp oficial', 'WHATSAPP OFICIAL']
+      ] }
+    ]
+  },
+
+  /* ---------- 4. RELIGAMENTO ---------- */
+  religNormal: {
+    cat: 'RELIGAMENTO',
+    nome: 'Religação Normal',
+    titulo: 'RELIGAMENTO - NORMAL',
+    orient: 'Ordem de religação aberta. Orientado a manter o disjuntor geral DESLIGADO até a chegada da equipe.',
+    passos: [
+      { pergunta: 'Como o débito foi quitado?', campo: 'Quitação do débito', opcoes: [
+        ['✅ Pix baixado em sistema', 'PIX BAIXADO EM SISTEMA'],
+        ['📄 Boleto - comprovante validado', 'BOLETO - COMPROVANTE VALIDADO']
+      ] },
+      { pergunta: 'Qual a área do imóvel? (define o prazo regulatório)', campo: 'Área', opcoes: [
+        ['🏙️ Urbana - prazo até 24h', 'URBANA (24H)'],
+        ['🌾 Rural - prazo até 48h', 'RURAL (48H)']
+      ] },
+      { pergunta: 'O acesso ao medidor está livre para a equipe?', campo: 'Acesso ao medidor', opcoes: [
+        ['🟢 Livre acesso', 'LIVRE ACESSO'],
+        ['👥 Necessita acompanhamento no local', 'NECESSITA ACOMPANHAMENTO']
+      ] }
+    ]
+  },
+  religUrgencia: {
+    cat: 'RELIGAMENTO',
+    nome: 'Religação de Urgência',
+    titulo: 'RELIGAMENTO - URGÊNCIA',
+    orient: 'Religamento de urgência aberto com prazo de até 4h. Informar sobre a taxa de serviço de urgência, onde disponível.',
+    passos: [
+      { pergunta: 'Como o débito foi quitado?', campo: 'Quitação do débito', opcoes: [
+        ['✅ Pix baixado em sistema', 'PIX BAIXADO EM SISTEMA'],
+        ['📄 Boleto - comprovante validado', 'BOLETO - COMPROVANTE VALIDADO']
+      ] },
+      { pergunta: 'A solicitação está dentro do horário limite de urgência da região?', campo: 'Horário limite', opcoes: [
+        ['⏰ Sim - urgência disponível (taxa aplicável)', 'DENTRO DO HORÁRIO LIMITE'],
+        ['🌙 Não - seguir o prazo normal', 'FORA DO HORÁRIO LIMITE']
+      ] }
+    ]
+  }
+};
+
+/* Tipos disponíveis em cada categoria (ordem do menu) */
+var TIPOS_POR_CAT = {
+  EMERGENCIA: ['fioCaido', 'fogoRede', 'posteCaido'],
+  MEDIDOR: ['medFogo', 'medChoque', 'medVisor', 'medLacre'],
+  VITAL: ['vitalFalta', 'vitalCadastro'],
+  RELIGAMENTO: ['religNormal', 'religUrgencia']
+};
+
+/* Categorias do menu principal */
+var CATEGORIAS = [
+  { chave: 'EMERGENCIA', ico: '🚨', nome: 'Ocorrência Emergencial', desc: 'Fio caído, fogo na rede ou poste', perigo: true },
+  { chave: 'MEDIDOR', ico: '⚡', nome: 'Ocorrência no Medidor', desc: 'Relógio de luz: incêndio, choque, visor ou lacre' },
+  { chave: 'VITAL', ico: '🏥', nome: 'Cliente Vital / Eletrodependente', desc: 'Equipamento de suporte à vida', perigo: true },
+  { chave: 'RELIGAMENTO', ico: '🔌', nome: 'Solicitação de Religamento', desc: 'Restabelecimento após quitação ou urgência' },
+  { chave: 'PID', ico: '💻', nome: 'Ressarcimento de Danos Elétricos (PID)', desc: 'Orientação de atendimento na loja presencial' }
+];
+
+/* ===== Estado ===== */
+var s = { etapa: 'MENU', cat: '', tipo: '', passo: 0, respostas: [] };
+
+var app = function () { return document.getElementById('app'); };
+
+function render() {
+  if (s.etapa === 'MENU') renderMenu();
+  else if (s.etapa === 'TIPOS') renderTipos();
+  else if (s.etapa === 'PERGUNTA') renderPergunta();
+  else if (s.etapa === 'FINAL') renderFinal();
+  else if (s.etapa === 'PID') renderPid();
+}
+
+/* ---------- MENU PRINCIPAL ---------- */
+function renderMenu() {
+  app().innerHTML = `
+    <span class="badge">TRIAGEM DE ATENDIMENTO</span>
+    <h2 style="margin-top:8px;">Selecione o Motivo do Contato:</h2>
+    <div class="speech-box">"Enel, bom dia/boa tarde. Meu nome é Lorena, com quem eu falo? Em que posso ajudar hoje?"</div>
+    <div class="btn-group">
+      ${CATEGORIAS.map((c, i) => `
+        <button class="${c.perigo ? 'emer' : ''}" onclick="escolherCategoria('${c.chave}')">${c.ico} ${i + 1}. ${c.nome}<br><span style="font-size:11px;font-weight:normal;opacity:.9">${c.desc}</span></button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function escolherCategoria(cat) {
+  s.cat = cat;
+  if (cat === 'PID') { s.etapa = 'PID'; render(); return; }
+  s.etapa = 'TIPOS';
+  render();
+}
+
+/* ---------- ESCOLHA DO TIPO DE OCORRÊNCIA ---------- */
+function renderTipos() {
+  const catInfo = CATEGORIAS.find(c => c.chave === s.cat);
+  const perigo = catInfo.perigo ? ' red' : '';
+  app().innerHTML = `
+    <button class="back-btn" onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
+    <span class="badge${perigo}">${catInfo.ico} ${catInfo.nome.toUpperCase()}</span>
+    <h3 style="margin-top:8px;">Escolha o tipo de ocorrência:</h3>
+    <div class="btn-group">
+      ${TIPOS_POR_CAT[s.cat].map(chave => {
+        const f = FLUXOS[chave];
+        return `<button class="${catInfo.perigo ? 'emer' : ''}" onclick="iniciarTipo('${chave}')">${f.nome}</button>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function iniciarTipo(tipo) {
+  s.tipo = tipo;
+  s.passo = 0;
+  s.respostas = [];
+  s.etapa = 'PERGUNTA';
+  render();
+}
+
+/* ---------- PERGUNTAS (DADOS EXIGIDOS) ---------- */
+function renderPergunta() {
+  const f = FLUXOS[s.tipo];
+  const passo = f.passos[s.passo];
+  app().innerHTML = `
+    <button class="back-btn" onclick="voltarPergunta()">⬅️ Voltar</button>
+    <span class="badge">${f.cat === 'EMERGENCIA' ? 'EMERGÊNCIA' : f.cat === 'MEDIDOR' ? 'OCORRÊNCIA NO MEDIDOR' : f.cat === 'VITAL' ? 'CLIENTE VITAL' : 'RELIGAMENTO'}</span>
+    <h3 style="margin-top:8px;">${f.nome}</h3>
+    <p style="font-size:13px;color:#555;margin-top:6px;">Pergunta ${s.passo + 1} de ${f.passos.length}</p>
+    <div class="speech-box">"${passo.pergunta}"</div>
+    <div class="btn-group">
+      ${passo.opcoes.map((o, i) => `
+        <button class="${o[1].indexOf('VÍTIMA') > -1 || o[1] === 'SIM' && (passo.campo === 'Chamas ativas' || passo.campo === 'Fios no chão' || passo.campo === 'Bloqueio de via' || passo.campo === 'Sinais de manipulação') ? 'emer' : ''}" onclick="responder('${o[1].replace(/'/g, '')}', ${i})">${o[0]}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function responder(valor, i) {
+  const f = FLUXOS[s.tipo];
+  const passo = f.passos[s.passo];
+  s.respostas.push({ campo: passo.campo, valor: valor });
+  if (s.passo + 1 < f.passos.length) {
+    s.passo++;
+    render();
+  } else {
+    s.etapa = 'FINAL';
+    render();
+  }
+}
+
+function voltarPergunta() {
+  if (s.passo > 0) {
+    s.passo--;
+    s.respostas.pop();
+    render();
+  } else {
+    // primeira pergunta: voltar para a lista de tipos da categoria
+    s.respostas = [];
+    s.tipo = '';
+    s.etapa = 'TIPOS';
+    render();
+  }
+}
+
+function voltarMenu() {
+  s.etapa = 'MENU';
+  s.cat = '';
+  s.tipo = '';
+  s.passo = 0;
+  s.respostas = [];
+  render();
+}
+
+/* ---------- RESUMO FINAL (CRM) ---------- */
+function renderFinal() {
+  const f = FLUXOS[s.tipo];
+  const detalhes = s.respostas.map(r => `${r.campo}: ${r.valor}`).join(' | ');
+
+  let orient = f.orient;
+  if (f.condOrient) {
+    const achou = s.respostas.find(r => r.campo === f.condOrient.campo && r.valor === f.condOrient.valor);
+    if (achou) orient = f.condOrient.texto;
+  }
+
+  const resumo = `[REGISTRO DE ATENDIMENTO - ENEL]
+--------------------------------------------------
+TIPO: ${f.titulo}
+DETALHES: ${detalhes}
+ORIENTAÇÃO AO CLIENTE: ${orient}
+--------------------------------------------------
+PROTOCOLO: [INSERIR_PROTOCOLO]`;
+
+  app().innerHTML = `
+    <span class="badge green">ATENDIMENTO CONCLUÍDO</span>
+    <h3 style="margin-top:8px;">Resumo para o CRM</h3>
+    <div class="speech-box">"${orient}"</div>
+    <p style="font-size:13px; font-weight:bold;">📋 Copie o texto abaixo para as observações do sistema:</p>
+    <textarea id="outputDetails" readonly>${resumo}</textarea>
+    <button class="ok" onclick="copiarTexto()" style="text-align:center; width:100%; margin-top:10px;">📋 Copiar para o CRM</button>
+    <button onclick="voltarMenu()" class="reset-btn">🔄 Voltar ao Menu Principal</button>
+  `;
+}
+
+/* ---------- RESSARCIMENTO (PID): apenas informar ---------- */
+function renderPid() {
+  app().innerHTML = `
+    <button class="back-btn" onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
+    <span class="badge">RESSARCIMENTO DE DANOS ELÉTRICOS (PID)</span>
+    <h3 style="margin-top:8px;">5. Orientação ao Cliente</h3>
+    <div class="speech-box">"Entendido. Para tratar de ressarcimento de danos elétricos, o(a) senhor(a) deve fazer o laudo do equipamento com um perito de confiança e ir até a loja presencial, levando o laudo, o equipamento danificado e a nota fiscal. Não abrimos registro por telefone: apenas informamos que o atendimento é feito na loja, onde serão passadas as orientações e os prazos."</div>
+    <div class="note">⚠️ Este atendimento não gera registro no CRM - apenas orientação e encaminhamento à loja.</div>
+    <div class="ref-note">🔒 Consulta interna do agente: não repasse os prazos do processo na ligação. A loja presencial informa as orientações e os prazos ao cliente.</div>
+    <details class="ref-box">
+      <summary>🧾 Fluxo oficial do pedido de ressarcimento (consulta)</summary>
+      <div class="ref-body">
+        <div class="flow-step"><span class="flow-num">1</span><div><strong>Solicitação</strong> — o ingresso deve ocorrer em até 5 anos após a data do dano.</div></div>
+        <div class="flow-step"><span class="flow-num">2</span><div><strong>Análise da solicitação</strong> — investigação da ocorrência.</div></div>
+        <div class="flow-step"><span class="flow-num">3</span><div><strong>Vistoria</strong> — a concessionária pode realizar vistoria técnica no local (até 10 dias úteis; 1 dia útil para conservação de alimentos/medicamentos).</div></div>
+        <div class="flow-step"><span class="flow-num">4</span><div><strong>Orçamentos/Laudos</strong> — o cliente tem 90 dias corridos para entregar orçamentos/laudos e documentos complementares (ex.: nota fiscal, quando solicitado).</div></div>
+        <div class="flow-step"><span class="flow-num">5</span><div><strong>Resposta</strong> — até 15 dias corridos (ingresso em até 90 dias do dano) ou 30 dias corridos (ingresso após 90 dias).</div></div>
+        <div class="flow-step"><span class="flow-num">6</span><div><strong>Pagamento</strong> — em até 20 dias após o prazo da resposta.</div></div>
+      </div>
+    </details>
+    <div class="btn-group">
+      <button class="ok" onclick="voltarMenu()" style="text-align:center;">✅ Informar e encerrar</button>
+    </div>
+  `;
+}
+
+function copiarTexto() {
+  const copyText = document.getElementById('outputDetails');
+  copyText.select();
+  document.execCommand('copy');
+  alert('Texto copiado para a área de transferência!');
+}
+
+render();
+</script>
+
+</body>
+</html>
