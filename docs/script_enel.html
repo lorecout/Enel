@@ -79,7 +79,16 @@
     ol.check { margin: 4px 0 0 18px; }
     ol.check li { margin-bottom: 4px; }
     .crm-tpl { background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-family: Consolas, 'Courier New', monospace; font-size: 11px; line-height: 1.5; white-space: pre-wrap; color: #1c1e21; margin-top: 6px; }
-  </style>
+
+    /* Seções e cards recolhíveis do painel lateral */
+    .sec-title { margin: 18px 0 8px; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: .5px; color: #6b7280; }
+    .side-panel > .sec-title:first-child { margin-top: 0; }
+    details.card { padding: 0; overflow: hidden; }
+    details.card > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 20px; font-size: 15px; font-weight: bold; color: #0056b3; background: #fbfcfd; }
+    details.card > summary::-webkit-details-marker { display: none; }
+    details.card > summary::after { content: '▾'; font-size: 11px; color: #9aa5b1; transition: transform .2s; }
+    details.card[open] > summary::after { transform: rotate(180deg); }
+    details.card > .card-body { padding: 16px 20px; }  </style>
 </head>
 <body>
 
@@ -93,19 +102,23 @@
   <!-- COLUNA LATERAL: INFORMAÇÕES E GUIA RÁPIDO ENEL -->
   <div class="side-panel">
 
+    <h5 class="sec-title">📞 Canais e atendimento</h5>
     <!-- CARD DE CANAIS E TELEFONES -->
-    <div class="card">
-      <div class="info-title">📞 Telefones e Canais Oficiais Enel</div>
+    <details class="card" open>
+      <summary>📞 Telefones e Canais Oficiais Enel</summary>
+      <div class="card-body">
       <div class="phone-box">
         <strong>Central de Atendimento:</strong> 0800 72 72 120<br>
         <strong>Emergência / Deficientes Auditivos:</strong> 0800 77 28 626<br>
         <strong>Corpo de Bombeiros:</strong> 193 | <strong>SAMU:</strong> 192
       </div>
-    </div>
+      </div>
+    </details>
 
     <!-- CARD FAQ - ATENDIMENTO POR TELEFONE -->
-    <div class="card">
-      <div class="info-title">📋 FAQ - Atendimento por Telefone</div>
+    <details class="card">
+      <summary>📋 FAQ - Atendimento por Telefone</summary>
+      <div class="card-body">
       <div class="faq-item">
         <strong>Antes de registrar falta de energia</strong>, confirme com o cliente:
         <ul>
@@ -119,11 +132,14 @@
       <div class="faq-item">
         <strong>Cliente vital / eletrodependente:</strong> o cadastro é feito em qualquer loja de atendimento, pelo titular da conta ou familiares, apresentando o atestado médico que comprove a necessidade de uso de equipamentos essenciais à vida.
       </div>
-    </div>
+      </div>
+    </details>
 
+    <h5 class="sec-title">🧠 Conhecimento técnico</h5>
     <!-- CARD DE NÍVEIS DE TENSÃO -->
-    <div class="card">
-      <div class="info-title">⚡ Alta, Média e Baixa Tensão</div>
+    <details class="card">
+      <summary>⚡ Alta, Média e Baixa Tensão</summary>
+      <div class="card-body">
       <div class="faq-item">
         <strong>Alta tensão (AT)</strong> — acima de 36 kV (36.000 V), subtipos: &gt;36 até 66 kV e &gt;66 até 220 kV. Transporta a energia em longas distâncias, das usinas às subestações.
       </div>
@@ -136,11 +152,13 @@
       <div class="faq-item">
         <strong>Caminho da energia:</strong> geração → transmissão AT → subestação (AT→MT) → centro de transformação (MT→BT) → consumo.
       </div>
-    </div>
+      </div>
+    </details>
 
     <!-- CARD DICIONÁRIO DO CLIENTE -->
-    <div class="card">
-      <div class="info-title">📖 Dicionário do Cliente (termos populares)</div>
+    <details class="card">
+      <summary>📖 Dicionário do Cliente (termos populares)</summary>
+      <div class="card-body">
       <details class="cat-item">
         <summary>🚨 Emergências na rede</summary>
         <div class="cat-body">
@@ -183,11 +201,13 @@
           <div class="faq-item"><strong>Relatos comuns:</strong> vários “picos” de luz e o motor da geladeira parou; chuva com raios queimou TV, roteador e portão “de estalo”.</div>
         </div>
       </details>
-    </div>
+      </div>
+    </details>
 
     <!-- CARD CABINE PRIMÁRIA -->
-    <div class="card">
-      <div class="info-title">🏢 Cabine Primária (Subestação Consumidora)</div>
+    <details class="card">
+      <summary>🏢 Cabine Primária (Subestação Consumidora)</summary>
+      <div class="card-body">
       <p class="cab-intro">Cabine primária = subestação consumidora de clientes de <strong>média tensão (Grupo A, ex.: 13,8 kV)</strong>: indústrias, shoppings, supermercados, hospitais e edifícios comerciais.</p>
       <details class="cat-item">
         <summary>🏗️ Estrutura operacional</summary>
@@ -224,21 +244,26 @@
 - ENCAMINHAMENTO: Despacho prioritário para equipe de alta/média tensão.</div>
         </div>
       </details>
-    </div>
+      </div>
+    </details>
 
     <!-- CARD GRUPO A x GRUPO B (75 kW) -->
-    <div class="card">
-      <div class="info-title">📏 Grupo A × Grupo B (limite de 75 kW)</div>
+    <details class="card">
+      <summary>📏 Grupo A × Grupo B (limite de 75 kW)</summary>
+      <div class="card-body">
       <p class="cab-intro">Marco regulatório da ANEEL (Resolução Normativa nº 1.000) para a transição de categoria de atendimento.</p>
       <div class="faq-item"><strong>Grupo B (Baixa Tensão) — até 75 kW:</strong> fornecimento em 127V, 220V ou 380V. Infraestrutura: padrão de entrada simples / mureta / medidor padrão.</div>
       <div class="faq-item"><strong>Grupo A (Média Tensão) — acima de 75 kW:</strong> fornecimento em média tensão (geralmente 13,8 kV ou 34,5 kV). Infraestrutura obrigatória: <strong>Cabine Primária / Subestação Consumidora</strong>.</div>
       <div class="faq-item"><strong>Por que a cabine é obrigatória:</strong> indústrias (maquinário pesado e motores que sobrecarregariam a rede de BT da rua); hospitais (alta confiabilidade, estabilidade e integração de geradores de emergência para UTIs e centros cirúrgicos); shoppings e centros comerciais (chillers de ar-condicionado, iluminação ampla, escadas rolantes e múltiplos estabelecimentos).</div>
       <div class="faq-item"><strong>Impacto no teleatendimento:</strong> ordens de serviço de clientes Grupo A devem ir para as equipes de <strong>Média/Alta Tensão</strong> (não para as equipes convencionais de BT). Se um cliente Grupo B solicitar ampliação de carga acima de 75 kW, orientar sobre a necessidade de <strong>projeto técnico e construção de cabine primária</strong> para migrar ao Grupo A.</div>
-    </div>
+      </div>
+    </details>
 
-    <!-- CARD DAS 5 CATEGORIAS OPERACIONAIS -->
-    <div class="card">
-      <div class="info-title">🗂️ As 5 Categorias de Atendimento</div>
+    <h5 class="sec-title">🗂️ Categorias e fluxos</h5>
+    <!-- CARD DAS 6 CATEGORIAS OPERACIONAIS -->
+    <details class="card" open>
+      <summary>🗂️ As 6 Categorias de Atendimento</summary>
+      <div class="card-body">
 
       <div class="golden">
         <strong>Regra de Ouro (Segurança):</strong> NUNCA confirme que o fio está desenergizado. Sempre oriente o cliente a manter 10m de distância.
@@ -310,7 +335,20 @@
         </div>
       </details>
 
-    </div>
+      <details class="cat-item">
+        <summary>🏢 6. Grupo A / Cabine Primária (Média Tensão)</summary>
+        <div class="cat-body">
+          <em>Clientes acima de 75 kW (ANEEL REN 1.000) com cabine primária — indústrias, hospitais, shoppings. Despacho para a Central de Operações do Grupo A.</em>
+          <ul class="cat-tipos">
+            <li><strong>Desarme do disjuntor geral / relé da cabine</strong> — não rearmar sem inspecionar barramento e transformador.</li>
+            <li><strong>Chave fusível "canela" aberta / fusível NH queimado</strong> — isolar a área abaixo do poste.</li>
+            <li><strong>Fumaça, vazamento de óleo ou ruído no transformador</strong> — manter a subestação trancada e afastar pessoas.</li>
+            <li><strong>Falha no sistema de medição (TCs/TPs/telemetria)</strong> — preservar lacres e equipamentos.</li>
+          </ul>
+        </div>
+      </details>
+      </div>
+    </details>
   </div>
 </div>
 
@@ -512,6 +550,29 @@ var FLUXOS = {
         ['🌙 Não - seguir o prazo normal', 'FORA DO HORÁRIO LIMITE']
       ] }
     ]
+  },
+  cabine: {
+    cat: 'CABINE',
+    nome: 'Ocorrência em Cabine Primária (Grupo A)',
+    titulo: 'OCORRÊNCIA EM CABINE PRIMÁRIA - GRUPO A',
+    orient: 'Chamado registrado para despacho prioritário da equipe de média/alta tensão. Orientar o cliente a manter distância da cabine e não religar equipamentos até a inspeção técnica.',
+    condOrient: { campo: 'RISCO DE INCÊNDIO/SEGURANÇA', valor: 'SIM', texto: 'Risco físico/estrutural identificado: manter afastamento da subestação e, com chamas, acionar Bombas (193). Despacho imediato para equipe de Média/Alta Tensão.' },
+    passos: [
+      { pergunta: 'Qual é a situação relatada na cabine/subestação consumidora?', campo: 'SITUAÇÃO', opcoes: [
+        ['🛑 Desarme geral do disjuntor da cabine', 'DESARME GERAL'],
+        ['💨 Fumaça ou cheiro de óleo queimado', 'FUMAÇA/CHEIRO DE QUEIMADO'],
+        ['〰️ Fase caída / meia fase', 'FASE CAÍDA'],
+        ['🔊 Ruído ou estalo anormal', 'RUÍDO/ESTALO ANORMAL']
+      ] },
+      { pergunta: 'Há risco de incêndio ou segurança no local (chamas, fumaça, estalo forte ou vazamento de óleo)?', campo: 'RISCO DE INCÊNDIO/SEGURANÇA', opcoes: [
+        ['🚨 Sim - há risco no local', 'SIM'],
+        ['🟢 Não - sem risco aparente', 'NÃO']
+      ] },
+      { pergunta: 'O eletricista/engenheiro responsável pelo imóvel já inspecionou a cabine?', campo: 'EQUIPE INTERNA', opcoes: [
+        ['✅ Sim - equipe interna já inspecionou', 'SIM - INSPECIONOU'],
+        ['❌ Não - ainda não inspecionou', 'NÃO - NÃO INSPECIONOU']
+      ] }
+    ]
   }
 };
 
@@ -520,7 +581,8 @@ var TIPOS_POR_CAT = {
   EMERGENCIA: ['fioCaido', 'fogoRede', 'posteCaido'],
   MEDIDOR: ['medFogo', 'medChoque', 'medVisor', 'medLacre'],
   VITAL: ['vitalFalta', 'vitalCadastro'],
-  RELIGAMENTO: ['religNormal', 'religUrgencia']
+  RELIGAMENTO: ['religNormal', 'religUrgencia'],
+  CABINE: ['cabine']
 };
 
 /* Categorias do menu principal */
@@ -529,7 +591,8 @@ var CATEGORIAS = [
   { chave: 'MEDIDOR', ico: '⚡', nome: 'Ocorrência no Medidor', desc: 'Relógio de luz: incêndio, choque, visor ou lacre' },
   { chave: 'VITAL', ico: '🏥', nome: 'Cliente Vital / Eletrodependente', desc: 'Equipamento de suporte à vida', perigo: true },
   { chave: 'RELIGAMENTO', ico: '🔌', nome: 'Solicitação de Religamento', desc: 'Restabelecimento após quitação ou urgência' },
-  { chave: 'PID', ico: '💻', nome: 'Ressarcimento de Danos Elétricos (PID)', desc: 'Orientação de atendimento na loja presencial' }
+  { chave: 'PID', ico: '💻', nome: 'Ressarcimento de Danos Elétricos (PID)', desc: 'Orientação de atendimento na loja presencial' },
+  { chave: 'CABINE', ico: '🏢', nome: 'Grupo A / Ocorrência em Cabine Primária', desc: 'Média tensão (13,8 kV) - indústrias, hospitais e shoppings', perigo: true }
 ];
 
 /* ===== Estado ===== */
@@ -541,20 +604,22 @@ function render() {
   if (s.etapa === 'MENU') renderMenu();
   else if (s.etapa === 'TIPOS') renderTipos();
   else if (s.etapa === 'PERGUNTA') renderPergunta();
+  else if (s.etapa === 'CABINE') renderCabine();
   else if (s.etapa === 'FINAL') renderFinal();
   else if (s.etapa === 'PID') renderPid();
 }
 
 /* ---------- MENU PRINCIPAL ---------- */
 function renderMenu() {
+  const itens = CATEGORIAS.map((c, i) => `
+        <button class="${c.perigo ? 'emer' : ''}" onclick="escolherCategoria('${c.chave}')">${c.ico} ${i + 1}. ${c.nome}<br><span style="font-size:11px;font-weight:normal;opacity:.9">${c.desc}</span></button>
+      `).join('');
   app().innerHTML = `
     <span class="badge">TRIAGEM DE ATENDIMENTO</span>
     <h2 style="margin-top:8px;">Selecione o Motivo do Contato:</h2>
     <div class="speech-box">"Enel, bom dia/boa tarde. Meu nome é Lorena, com quem eu falo? Em que posso ajudar hoje?"</div>
     <div class="btn-group">
-      ${CATEGORIAS.map((c, i) => `
-        <button class="${c.perigo ? 'emer' : ''}" onclick="escolherCategoria('${c.chave}')">${c.ico} ${i + 1}. ${c.nome}<br><span style="font-size:11px;font-weight:normal;opacity:.9">${c.desc}</span></button>
-      `).join('')}
+      ${itens}
     </div>
   `;
 }
@@ -562,11 +627,271 @@ function renderMenu() {
 function escolherCategoria(cat) {
   s.cat = cat;
   if (cat === 'PID') { s.etapa = 'PID'; render(); return; }
+  if (cat === 'CABINE') { s.etapa = 'CABINE'; render(); return; }
   s.etapa = 'TIPOS';
   render();
 }
 
-/* ---------- ESCOLHA DO TIPO DE OCORRÊNCIA ---------- */
+/* ============================================================
+   FLUXO GRUPO A — CABINE PRIMÁRIA (MÉDIA/ALTA TENSÃO)
+   Script completo: identificação → sondagem → ramificação por
+   tipo de ocorrência → confirmação de acesso → encerramento.
+   ============================================================ */
+var CABINE_RAMOS = {
+  desarme: {
+    ico: '⚡',
+    titulo: 'A. Desarme do Disjuntor Geral ou Relé da Cabine',
+    situacao: 'DESARME DE DISJUNTOR PVO/VÁCUO OU RELÉ DA CABINE',
+    sondagem: 'O disjuntor de alta tensão (PVO ou a vácuo) ou o relé de proteção da cabine desarmou?',
+    orient: 'Orientar a equipe de manutenção interna a NÃO rearmar o disjuntor sem antes inspecionar o barramento e o transformador. Se houver falha na rede Enel, nossa equipe de Média Tensão fará a verificação no ponto de entrega.',
+    risco: 'Não'
+  },
+  fusivel: {
+    ico: '💥',
+    titulo: 'B. Queima de Fusível na Rede / Chave Fusível ("Canela")',
+    situacao: 'CHAVE FUSÍVEL "CANELA" ABERTA / FUSÍVEL NH QUEIMADO',
+    sondagem: 'Houve barulho de estouro na rede externa? A chave fusível ("canela") do poste da rua abriu ou o fusível NH da cabine queimou?',
+    orient: 'Se a chave fusível do poste da rua estiver aberta ou pendurada, manter a área abaixo do poste ISOLADA. Nossa equipe especializada fará a troca do elo fusível com a vara de manobra.',
+    risco: 'Não'
+  },
+  transformador: {
+    ico: '🔥',
+    titulo: 'C. Fumaça, Vazamento de Óleo ou Ruído no Transformador',
+    situacao: 'FUMAÇA NO TRANSFORMADOR / VAZAMENTO DE ÓLEO',
+    sondagem: 'Há presença de fumaça, cheiro de óleo queimado, vazamento ou zumbido anormal no transformador ou nas muflas?',
+    orient: 'SEGURANÇA: manter a subestação TRANCADA e afastar qualquer pessoa do local. NÃO manusear chaves seccionadoras ou disjuntores enquanto houver fumaça ou vazamento.',
+    risco: 'Sim - Fumaça/Óleo',
+    perigo: true
+  },
+  medicao: {
+    ico: '📊',
+    titulo: 'D. Falha no Sistema de Medição do Grupo A',
+    situacao: 'FALHA NO SISTEMA DE MEDIÇÃO (VISOR/TELEMETRIA/LACRE)',
+    sondagem: 'O medidor de memória de massa/telemetria está com o visor apagado, travado ou o lacre da caixa de medição foi rompido?',
+    orient: 'Será registrada a ordem de verificação técnica da medição de Média Tensão. Manter os lacres e os equipamentos de medição (TCs e TPs) preservados.',
+    risco: 'Não'
+  }
+};
+
+var CABINE_SONDAGEM = [
+  {
+    sub: 'sondagem1',
+    fala: 'Para direcionar a equipe técnica adequada, peço que me informe: 1. A falta de energia é total no empreendimento ou há falta de fase (meia fase)?',
+    campo: 'FALHA',
+    prox: 'sondagem2',
+    opcoes: [
+      ['⛔ Total no empreendimento', 'TOTAL NO EMPREENDIMENTO'],
+      ['〰️ Falta de fase (meia fase)', 'FALTA DE FASE / MEIA FASE'],
+      ['❓ Não sabe informar', 'NÃO SABE INFORMAR']
+    ]
+  },
+  {
+    sub: 'sondagem2',
+    fala: '2. A rede externa da rua ou os imóveis vizinhos também estão sem energia?',
+    campo: 'REDE EXTERNA AFETADA',
+    prox: 'sondagem3',
+    opcoes: [
+      ['🏘️ Sim - vizinhos sem luz', 'SIM - VIZINHOS SEM LUZ'],
+      ['🏢 Não - apenas o imóvel', 'NÃO - APENAS O IMÓVEL']
+    ]
+  },
+  {
+    sub: 'sondagem3',
+    fala: '3. O eletricista ou responsável técnico do local já inspecionou a cabine primária / subestação?',
+    campo: 'EQUIPE INTERNA',
+    prox: 'ramo',
+    opcoes: [
+      ['✅ Sim - já inspecionou', 'SIM - INSPECIONOU'],
+      ['❌ Não - ainda não inspecionou', 'NÃO - NÃO INSPECIONOU']
+    ]
+  }
+];
+
+function renderCabine() {
+  if (!s.cab) s.cab = { sub: 'identificar', resp: {} };
+  const sub = s.cab.sub;
+  const resp = s.cab.resp;
+
+  const cab = (titulo, corpo) => { app().innerHTML = `
+    <button class="back-btn" onclick="cabVoltar()">⬅️ Voltar</button>
+    <span class="badge red">🏢 GRUPO A - MÉDIA/ALTA TENSÃO</span>
+    <h3 style="margin-top:8px;">${titulo}</h3>
+    ${corpo}
+  `; };
+
+  // 1. Identificação (Razão Social, CNPJ, Nº Instalação/PN e estrutura)
+  if (sub === 'identificar') {
+    cab('1. Saudações e identificação do cliente', `
+      <div class="speech-box">"Enel, bom dia/boa tarde. Meu nome é Lorena, com quem eu falo?"<br><br>"Compreendi, [Nome do Cliente]. Por se tratar de um cliente atendido em Média/Alta Tensão, vou registrar o atendimento para a nossa Central de Operações do Grupo A. Por favor, confirme o <strong>Razão Social ou Nome do Titular</strong>, o <strong>CNPJ</strong> e o <strong>Número da Instalação/PN</strong> do local."</div>
+      <div style="margin-top:10px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Razão Social / Nome do Titular:</label>
+        <input type="text" id="cab-razao" placeholder="Ex: ABC Indústria e Comércio Ltda." style="width:100%;font-size:12px;padding:6px 10px;" />
+        <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">CNPJ:</label>
+        <input type="text" id="cab-cnpj" placeholder="Ex: 00.000.000/0001-00" style="width:100%;font-size:12px;padding:6px 10px;" />
+        <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">Número da Instalação / PN (lido na conta):</label>
+        <input type="text" id="cab-pn" placeholder="Ex: 012.345.678" style="width:100%;font-size:12px;padding:6px 10px;" />
+        <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">Tipo de estrutura:</label>
+        <select id="cab-estrutura" style="width:100%;font-size:12px;padding:6px 10px;">
+          <option>Cabine Primária</option>
+          <option>Subestação Aérea</option>
+          <option>Centro de Medição</option>
+        </select>
+      </div>
+      <div class="btn-group">
+        <button class="ok" onclick="cabProsseguir()" style="text-align:center;">➡️ Confirmar e continuar</button>
+      </div>
+    `);
+    return;
+  }
+
+  // 2. Sondagem técnica (3 perguntas do script)
+  const sond = CABINE_SONDAGEM.find(x => x.sub === sub);
+  if (sond) {
+    cab('2. Sondagem técnica e identificação do problema', `
+      <div class="speech-box">"${sond.fala}"</div>
+      <div class="btn-group">
+        ${sond.opcoes.map(o => `<button onclick="cabResp('${sond.campo}','${o[1].replace(/'/g, ' ')}','${sond.prox}')">${o[0]}</button>`).join('')}
+      </div>
+    `);
+    return;
+  }
+
+  // 3. Ramificação por tipo de ocorrência
+  if (sub === 'ramo') {
+    cab('3. Ramificação por tipo de ocorrência — selecione o bloco correspondente ao relato técnico do cliente:', `
+      <div class="btn-group">
+        ${Object.keys(CABINE_RAMOS).map(k => {
+          const rm = CABINE_RAMOS[k];
+          return `<button class="${rm.perigo ? 'emer' : ''}" onclick="cabRamo('${k}')">${rm.ico} ${rm.titulo}</button>`;
+        }).join('')}
+      </div>
+    `);
+    return;
+  }
+
+  // Tela do ramo escolhido (sondagem + orientação)
+  const rm = CABINE_RAMOS[sub];
+  if (rm) {
+    cab(`${rm.ico} ${rm.titulo}`, `
+      <div class="speech-box">"${rm.sondagem}"</div>
+      <div class="golden" style="margin-top:12px;"><strong>Orientação:</strong> ${rm.orient}</div>
+      <div class="btn-group">
+        <button class="ok" onclick="cabParaConfirmacao()" style="text-align:center;">➡️ Continuar</button>
+      </div>
+    `);
+    return;
+  }
+
+  // 4. Confirmação de dados e acesso à subestação
+  if (sub === 'confirmacao') {
+    cab('4. Confirmação de dados e acesso à subestação', `
+      <div class="speech-box">"Para garantir o atendimento rápido da equipe de Alta Tensão, por favor confirme: 1. O endereço completo da empresa e um ponto de referência principal? 2. O responsável técnico/eletricista estará no local para acompanhar e dar acesso à cabine primária? 3. Nome e telefone celular direto do contato responsável no local?"</div>
+      <div style="margin-top:10px;">
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Endereço completo e ponto de referência:</label>
+        <input type="text" id="cab-endereco" placeholder="Ex: Av. Industrial, 1200 - Galpão 4" style="width:100%;font-size:12px;padding:6px 10px;" />
+        <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">Responsável técnico no local:</label>
+        <input type="text" id="cab-responsavel" placeholder="Ex: Eng. Carlos Lima" style="width:100%;font-size:12px;padding:6px 10px;" />
+        <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">Telefone celular do contato:</label>
+        <input type="text" id="cab-telefone" placeholder="Ex: (11) 9XXXX-XXXX" style="width:100%;font-size:12px;padding:6px 10px;" />
+      </div>
+      <div class="btn-group">
+        <button class="ok" onclick="cabFinalizar()" style="text-align:center;">📋 Confirmar e gerar registro CRM</button>
+      </div>
+    `);
+    return;
+  }
+
+  // 5. Mensagem final e encerramento (CRM)
+  if (sub === 'final') {
+    const g = c => resp[c] || '[a informar]';
+    const tpl = `[OCORRÊNCIA GRUPO A - MÉDIA / ALTA TENSÃO]
+--------------------------------------------------
+- RAZÃO SOCIAL / TITULAR: ${g('RAZÃO SOCIAL / TITULAR')}
+- CNPJ / INSTALAÇÃO (PN): ${g('CNPJ')} / ${g('Nº INSTALAÇÃO / PN')}
+- TIPO DE ESTRUTURA: ${g('TIPO DE ESTRUTURA')}
+- SITUAÇÃO RELATADA: ${g('SITUAÇÃO RELATADA')}
+- FALHA INFORMADA: ${g('FALHA')}
+- REDE EXTERNA AFETADA: ${g('REDE EXTERNA AFETADA')}
+- EQUIPE INTERNA (inspeção da cabine): ${g('EQUIPE INTERNA')}
+- RESPONSÁVEL TÉCNICO NO LOCAL: ${g('RESPONSÁVEL TÉCNICO NO LOCAL')} - ${g('TELEFONE DO CONTATO')}
+- ENDEREÇO COMPLETO / REFERÊNCIA: ${g('ENDEREÇO + REFERÊNCIA')}
+- RISCO FÍSICO / ESTRUTURAL: ${g('RISCO FÍSICO / ESTRUTURAL')}
+- ORIENTAÇÃO PRESTADA: Cliente instruído a manter a cabine trancada, isolar a área e aguardar a equipe de Média Tensão.
+--------------------------------------------------
+- ENCAMINHAMENTO: Despacho prioritário para Central de Operação do Grupo A.`;
+    app().innerHTML = `
+      <button class="back-btn" onclick="cabSair()">⬅️ Voltar ao Menu Principal</button>
+      <span class="badge green">ATENDIMENTO CONCLUÍDO - GUPO A</span>
+      <h3 style="margin-top:8px;">5. Mensagem final e encerramento</h3>
+      <div class="speech-box">"O protocolo do seu atendimento é o número [Número do Protocolo]. A ocorrência foi registrada com prioridade de Média/Alta Tensão (Grupo A) e direcionada para a mesa de despacho especializado. Reitero a orientação de segurança: apenas profissionais habilitados devem ter acesso à subestação. Mantenha a área trancada até a chegada dos técnicos da Enel. A Enel agradece o seu contato. Tenha um ótimo dia/uma ótima tarde."</div>
+      <p style="font-size:13px; font-weight:bold;">📋 Copie o texto abaixo para as observações do sistema:</p>
+      <textarea id="outputDetails" readonly>${tpl}</textarea>
+      <button class="ok" onclick="copiarTexto()" style="text-align:center; width:100%; margin-top:10px;">📋 Copiar para o CRM</button>
+      <button onclick="cabSair()" class="reset-btn">🔄 Voltar ao Menu Principal</button>
+    `;
+    return;
+  }
+}
+
+function cabProsseguir() {
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  s.cab.resp['RAZÃO SOCIAL / TITULAR'] = v('cab-razao') || '[a informar]';
+  s.cab.resp['CNPJ'] = v('cab-cnpj') || '[a informar]';
+  s.cab.resp['Nº INSTALAÇÃO / PN'] = v('cab-pn') || '[a informar]';
+  const sel = document.getElementById('cab-estrutura');
+  s.cab.resp['TIPO DE ESTRUTURA'] = sel ? sel.options[sel.selectedIndex].text : 'Cabine Primária';
+  s.cab.sub = 'sondagem1';
+  renderCabine();
+}
+
+function cabResp(campo, valor, prox) {
+  s.cab.resp[campo] = valor;
+  s.cab.sub = prox;
+  renderCabine();
+}
+
+function cabRamo(k) {
+  const rm = CABINE_RAMOS[k];
+  s.cab.resp['SITUAÇÃO RELATADA'] = rm.situacao;
+  s.cab.resp['RISCO FÍSICO / ESTRUTURAL'] = rm.risco;
+  s.cab.sub = k;
+  renderCabine();
+}
+
+function cabParaConfirmacao() {
+  s.cab.sub = 'confirmacao';
+  renderCabine();
+}
+
+function cabFinalizar() {
+  const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  s.cab.resp['ENDEREÇO + REFERÊNCIA'] = v('cab-endereco') || '[a informar]';
+  s.cab.resp['RESPONSÁVEL TÉCNICO NO LOCAL'] = v('cab-responsavel') || '[a informar]';
+  s.cab.resp['TELEFONE DO CONTATO'] = v('cab-telefone') || '[a informar]';
+  s.cab.sub = 'final';
+  renderCabine();
+}
+
+function cabVoltar() {
+  const mapa = {
+    identificar: 'MENU',
+    sondagem1: 'identificar',
+    sondagem2: 'sondagem1',
+    sondagem3: 'sondagem2',
+    ramo: 'sondagem3',
+    desarme: 'ramo', fusivel: 'ramo', transformador: 'ramo', medicao: 'ramo',
+    confirmacao: 'ramo',
+    final: 'MENU'
+  };
+  const alvo = mapa[s.cab.sub] || 'MENU';
+  if (alvo === 'MENU') { s.cab = null; voltarMenu(); }
+  else { s.cab.sub = alvo; renderCabine(); }
+}
+
+function cabSair() {
+  s.cab = null;
+  voltarMenu();
+}  /* ---------- ESCOLHA DO TIPO DE OCORRÊNCIA ---------- */
 function renderTipos() {
   const catInfo = CATEGORIAS.find(c => c.chave === s.cat);
   const perigo = catInfo.perigo ? ' red' : '';
@@ -597,13 +922,13 @@ function renderPergunta() {
   const passo = f.passos[s.passo];
   app().innerHTML = `
     <button class="back-btn" onclick="voltarPergunta()">⬅️ Voltar</button>
-    <span class="badge">${f.cat === 'EMERGENCIA' ? 'EMERGÊNCIA' : f.cat === 'MEDIDOR' ? 'OCORRÊNCIA NO MEDIDOR' : f.cat === 'VITAL' ? 'CLIENTE VITAL' : 'RELIGAMENTO'}</span>
+    <span class="badge">${f.cat === 'EMERGENCIA' ? 'EMERGÊNCIA' : f.cat === 'MEDIDOR' ? 'OCORRÊNCIA NO MEDIDOR' : f.cat === 'CABINE' ? 'CABINE / GRUPO A (MÉDIA TENSÃO)' : f.cat === 'VITAL' ? 'CLIENTE VITAL' : 'RELIGAMENTO'}</span>
     <h3 style="margin-top:8px;">${f.nome}</h3>
     <p style="font-size:13px;color:#555;margin-top:6px;">Pergunta ${s.passo + 1} de ${f.passos.length}</p>
     <div class="speech-box">"${passo.pergunta}"</div>
     <div class="btn-group">
       ${passo.opcoes.map((o, i) => `
-        <button class="${o[1].indexOf('VÍTIMA') > -1 || o[1] === 'SIM' && (passo.campo === 'Chamas ativas' || passo.campo === 'Fios no chão' || passo.campo === 'Bloqueio de via' || passo.campo === 'Sinais de manipulação') ? 'emer' : ''}" onclick="responder('${o[1].replace(/'/g, '')}', ${i})">${o[0]}</button>
+        <button class="${o[1].indexOf('VÍTIMA') > -1 || o[1] === 'SIM' && (passo.campo === 'Chamas ativas' || passo.campo === 'Fios no chão' || passo.campo === 'Bloqueio de via' || passo.campo === 'Sinais de manipulação' || passo.campo === 'RISCO DE INCÊNDIO/SEGURANÇA') ? 'emer' : ''}" onclick="responder('${o[1].replace(/'/g, '')}', ${i})">${o[0]}</button>
       `).join('')}
     </div>
   `;
@@ -643,9 +968,7 @@ function voltarMenu() {
   s.passo = 0;
   s.respostas = [];
   render();
-}
-
-/* ---------- RESUMO FINAL (CRM) ---------- */
+}/* ---------- RESUMO FINAL (CRM) ---------- */
 function renderFinal() {
   const f = FLUXOS[s.tipo];
   const detalhes = s.respostas.map(r => `${r.campo}: ${r.valor}`).join(' | ');
@@ -680,7 +1003,7 @@ function renderPid() {
   app().innerHTML = `
     <button class="back-btn" onclick="voltarMenu()">⬅️ Voltar ao Menu</button>
     <span class="badge">RESSARCIMENTO DE DANOS ELÉTRICOS (PID)</span>
-    <h3 style="margin-top:8px;">5. Orientação ao Cliente</h3>
+    <h3 style="margin-top:8px;">💻 Orientação ao Cliente (Ressarcimento)</h3>
     <div class="speech-box">"Entendido. Para tratar de ressarcimento de danos elétricos, o(a) senhor(a) deve fazer o laudo do equipamento com um perito de confiança e ir até a loja presencial, levando o laudo, o equipamento danificado e a nota fiscal. Não abrimos registro por telefone: apenas informamos que o atendimento é feito na loja, onde serão passadas as orientações e os prazos."</div>
     <div class="note">⚠️ Este atendimento não gera registro no CRM - apenas orientação e encaminhamento à loja.</div>
     <div class="ref-note">🔒 Consulta interna do agente: não repasse os prazos do processo na ligação. A loja presencial informa as orientações e os prazos ao cliente.</div>
