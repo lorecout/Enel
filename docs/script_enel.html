@@ -651,6 +651,50 @@ function copiarTexto() {
 }
 
 render();
+
+/* ===== Atualização automática (sem precisar dar F5) =====
+   Verifica a cada poucos segundos se o arquivo mudou. Quando o conteúdo
+   novo aparece (arquivo editado/publicado), a página recarrega sozinha.
+   Regras:
+   - Só recarrega quando NÃO há um atendimento em andamento (para não
+     perder o fluxo no meio de uma ligação);
+   - Só verifica com a página visível (economiza recursos em segundo plano). */
+(function autoAtualizar() {
+  var INTERVALO_MS = 5000;
+  var referencia = null;
+
+  function podeRecarregar() {
+    if (document.hidden) return false;
+    if (typeof s !== 'undefined' && s.etapa !== 'MENU') return false; // atendimento em andamento
+    return true;
+  }
+
+  function marcador(texto) {
+    var h = 5381;
+    for (var i = 0; i < texto.length; i++) {
+      h = ((h << 5) + h + texto.charCodeAt(i)) | 0;
+    }
+    return 'h' + (h >>> 0).toString(36);
+  }
+
+  function verificar() {
+    if (!podeRecarregar()) return;
+    fetch(location.pathname + '?auto=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function (txt) {
+        var novo = marcador(txt);
+        if (referencia === null) { referencia = novo; return; }
+        if (novo !== referencia) location.reload();
+      })
+      .catch(function () { /* sem rede: ignora silenciosamente */ });
+  }
+
+  setInterval(verificar, INTERVALO_MS);
+  window.addEventListener('focus', function () { setTimeout(verificar, 400); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') setTimeout(verificar, 400);
+  });
+})();
 </script>
 
 </body>
