@@ -88,7 +88,28 @@
     details.card > summary::-webkit-details-marker { display: none; }
     details.card > summary::after { content: '▾'; font-size: 11px; color: #9aa5b1; transition: transform .2s; }
     details.card[open] > summary::after { transform: rotate(180deg); }
-    details.card > .card-body { padding: 16px 20px; }  </style>
+    details.card > .card-body { padding: 16px 20px; }
+
+    /* ===== Modo Treinamento ===== */
+    .treino-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff; border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 12px; border: 1px solid #e5e7eb; }
+    #treinoBtn { background: #f3e8ff; color: #6d28d9; border: 1px solid #d8b4fe; border-radius: 999px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: center; white-space: nowrap; transition: 0.2s; }
+    #treinoBtn:hover { background: #e9d5ff; }
+    #treinoBtn.treino-on { background: #6d28d9; color: #fff; border-color: #6d28d9; }
+    #treinoBtn.treino-on:hover { background: #5b21b6; }
+    .treino-hint { font-size: 11.5px; color: #6b7280; line-height: 1.45; flex: 1; min-width: 200px; }
+    .treino-hint b { color: #6d28d9; }
+    .treino-banner { background: #f3e8ff; border: 1px solid #d8b4fe; color: #4c1d95; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; line-height: 1.55; margin-bottom: 14px; }
+    .treino-box { background: #faf5ff; border: 1px solid #d8b4fe; border-radius: 8px; padding: 14px; margin: 14px 0; }
+    .treino-echo { font-size: 13px; color: #4c1d95; margin-bottom: 8px; }
+    .treino-echo b { color: #1c1e21; }
+    .treino-fala { background: #fff; border-left: 4px solid #7c3aed; border-radius: 0 6px 6px 0; padding: 10px 12px; font-style: italic; font-size: 13.5px; line-height: 1.55; color: #2e1065; margin: 6px 0 12px; }
+    .treino-fala .tag { font-style: normal; font-size: 10.5px; font-weight: bold; letter-spacing: 0.4px; text-transform: uppercase; color: #7c3aed; display: block; margin-bottom: 4px; }
+    .treino-porque { font-size: 12.5px; color: #333; line-height: 1.6; background: #fff; border: 1px solid #e9d5ff; border-radius: 6px; padding: 10px 12px; margin-top: 4px; }
+    .treino-porque b { color: #6d28d9; }
+    .treino-acoes { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .treino-acoes button { flex: 1; min-width: 160px; text-align: center; }
+    button.retry { background: #fff; color: #6d28d9; border: 1px solid #c4b5fd; }
+    button.retry:hover { background: #f3e8ff; }  </style>
 </head>
 <body>
 
@@ -96,6 +117,10 @@
 
   <!-- COLUNA PRINCIPAL: SCRIPT INTERATIVO -->
   <div class="main-panel">
+    <div class="treino-toolbar">
+      <button id="treinoBtn" class="treino-off" onclick="toggleTreino()">🎓 Modo Treinamento: Desligado</button>
+      <span class="treino-hint">No modo treinamento, após cada resposta o simulador mostra a <b>fala correta</b> do agente e explica o <b>porquê</b> da pergunta, antes de você continuar.</span>
+    </div>
     <div class="card" id="app"></div>
   </div>
 
@@ -664,10 +689,199 @@ var CATEGORIAS = [
   { chave: 'CABINE', ico: '🏢', nome: 'Grupo A / Ocorrência em Cabine Primária', desc: 'Média tensão (13,8 kV) - indústrias, hospitais e shoppings', perigo: true }
 ];
 
+/* ===== Dicionário de treinamento: porquê de cada pergunta =====
+   Chaves: 'fluxo|<tipo>|<índice do passo>' ou 'cabine|<etapa>' ou
+   'cabine|ramo:<chave>' — texto exibido no modo treinamento. */
+var PORQUE = {
+  'fluxo|fioCaido|0': 'Define o risco imediato da ocorrência: fio sobre veículo ou imóvel significa contato energizado com estrutura ou pessoas e exige prioridade e isolamento maiores. Se houver veículo, pergunte se há ocupantes — eles não devem descer.',
+  'fluxo|fioCaido|1': 'Se a via estiver bloqueada, a equipe precisa de prioridade e sinalização de trânsito (apoio do agente/polícia). Sem bloqueio, basta isolar o ponto do fio.',
+  'fluxo|fogoRede|0': 'O local da chama muda o risco e o procedimento: transformador em chamas pode explodir (afastamento maior e corte do alimentador); fiação em chamas indica condutor rompido; chama no poste pede isolamento do ponto.',
+  'fluxo|fogoRede|1': 'Com imóveis ou vegetação próximos, o fogo pode se propagar: oriente acionar o Corpo de Bombeiros (193) e sinalize prioridade máxima no despacho.',
+  'fluxo|posteCaido|0': 'Um poste totalmente caído mantém a rede tensionada e energizada; um poste inclinado ou abalroado pode cair a qualquer momento. A resposta define a urgência e a distância de isolamento orientada.',
+  'fluxo|posteCaido|1': 'Fio no chão gera risco de passo de tensão: o solo ao redor do ponto de contato pode estar energizado. Ninguém pode se aproximar nem dirigir por cima — mantenha distância de 10 m ou mais.',
+  'fluxo|posteCaido|2': 'Via obstruída exige coordenação com o trânsito e prioridade de liberação: a equipe sai com sinalização e apoio para desvio.',
+  'fluxo|medFogo|0': 'Chamas ativas significam risco de incêndio e de explosão do medidor: acione os Bombeiros (193) e classifique como despacho emergencial imediato. Sem chamas, o atendimento é de verificação técnica.',
+  'fluxo|medFogo|1': 'Fumaça ou calor intenso indicam curto-circuito interno ainda ativo: não se deve tocar no medidor nem desligar o disjuntor — a equipe com EPI fará a desenergização segura.',
+  'fluxo|medChoque|0': 'A localização da caixa energizada delimita a área de risco e quem pode ter contato: mureta em condomínio expõe mais pessoas do que fachada de imóvel isolado.',
+  'fluxo|medChoque|1': 'Se houve descarga elétrica, há vítima: acione o SAMU (192) e os Bombeiros (193) e oriente a NÃO tocar na vítima enquanto ela estiver em contato com a rede. Isso muda a prioridade do atendimento.',
+  'fluxo|medVisor|0': 'Se o imóvel está sem energia, o defeito não é só do visor — é falta de energia, e o atendimento segue o fluxo de falta (incluindo checar cliente vital). Com energia normal, é defeito técnico do medidor: verificação ou substituição.',
+  'fluxo|medLacre|0': 'Sinais de manipulação na fiação indicam possível fraude ou adulteração da medição — o serviço é de inspeção de irregularidade. Sem sinais, é apenas reposição do lacre (selagem técnica).',
+  'fluxo|vitalFalta|0': 'O equipamento define a criticidade do caso (respirador e diálise são os mais sensíveis) e o que registrar no CRM: a equipe precisa saber qual suporte vital está em risco para priorizar o atendimento.',
+  'fluxo|vitalFalta|1': 'A autonomia da bateria define a urgência real: sem bateria ou com pouca carga, o risco à vida é imediato — sinalize prioridade máxima e oriente um plano B (gerador, mudança temporária de local).',
+  'fluxo|vitalCadastro|0': 'O cadastro de cliente vital exige laudo médico com CID comprovando a dependência do equipamento. Sem o laudo não há cadastro — oriente a obtê-lo com o médico assistente.',
+  'fluxo|vitalCadastro|1': 'O canal escolhido (site ou WhatsApp oficial) define onde o cliente enviará o laudo e os documentos do titular — é o que inicia a análise e a conclusão do cadastro.',
+  'fluxo|religNormal|0': 'A religação exige quitação comprovada: Pix normalmente baixa em sistema na hora; boleto exige validar o comprovante apresentado. Sem quitação, não há religação a solicitar.',
+  'fluxo|religNormal|1': 'O prazo regulatório (ANEEL REN 1.000, Art. 362) depende da área: até 24h na urbana e até 48h na rural. Informar o prazo errado gera reclamação — confirme a área antes de prometer.',
+  'fluxo|religNormal|2': 'A equipe só religa com acesso ao medidor: portão trancado ou animal solto impedem a execução e atrasam o religamento. Oriente a liberar o acesso e manter o disjuntor desligado até a chegada.',
+  'fluxo|religUrgencia|0': 'Igual à religação normal: só há religação com débito quitado e comprovado. A forma de quitação (Pix ou boleto) define se a confirmação é imediata ou exige validação do comprovante.',
+  'fluxo|religUrgencia|1': 'Na urgência o prazo é menor: até 4h (urbana) ou 8h (rural), conforme o Art. 362. A área define o prazo a informar e a rota da equipe.',
+  'fluxo|religUrgencia|2': 'A urgência só é oferecida dentro do horário limite da região e com taxa, onde aplicável. Fora do horário, o correto é abrir religação normal (24h/48h) — não prometa urgência inexistente.',
+  'fluxo|religSuspensao|0': 'Suspensão indevida é o corte com pagamento em dia ou sem aviso prévio: nesses casos o restabelecimento é em até 4h, sem custo (Art. 362, I). Se não religar no prazo, oriente o cliente a acionar a ANEEL pelo 167.',
+  'cabine|identificar': 'Cliente Grupo A (média/alta tensão) é localizado pelo CNPJ e pelo número da instalação/PN na base de média tensão. Com razão social e dados corretos, o chamado chega à mesa certa sem retrabalho.',
+  'cabine|sondagem1': 'Falta total pode vir da rede da Enel ou da entrada do cliente; meia fase (falta de fase) quase sempre é falha em uma fase da média tensão ou da proteção — cada caso tem equipe e procedimento diferentes.',
+  'cabine|sondagem2': 'Se os vizinhos também estão sem energia, a falha está na rede da Enel, antes do cliente — equipe de rede. Se só o imóvel apagou, a causa provável está na cabine ou na instalação interna do cliente.',
+  'cabine|sondagem3': 'Saber se o responsável técnico já inspecionou a cabine indica se o problema foi localizado (o relato técnico acelera o despacho) ou se ainda é preciso orientar a não religar nada e aguardar a equipe.',
+  'cabine|ramo': 'Cada bloco corresponde a um tipo de ocorrência com equipe, procedimento e orientação de segurança próprios — a escolha direciona a ordem de serviço para a Central de Operações do Grupo A.',
+  'cabine|ramo:desarme': 'O desarme da proteção (disjuntor PVO/vácuo ou relé) indica interrupção por sobrecarga ou curto. Religar sem inspecionar barramento e transformador pode causar novo desarme com arco ou danificar o transformador — oriente a NÃO rearmar.',
+  'cabine|ramo:fusivel': 'Chave fusível (a “canela”) aberta ou fusível NH queimado significa que a proteção da rede atuou. A área abaixo do poste deve ficar isolada, e a troca do elo é feita pela equipe com vara de manobra — nunca oriente religamento manual.',
+  'cabine|ramo:transformador': 'Fumaça, vazamento de óleo ou ruído anormal indicam risco de falha interna ou explosão do transformador. A subestação deve ficar trancada, sem manuseio de chaves seccionadoras; com chamas, acione os Bombeiros (193).',
+  'cabine|ramo:medicao': 'Falha de medição (visor, telemetria ou lacre) não interrompe o fornecimento — é verificação técnica. Lacres, TCs e TPs devem ser preservados para a análise da medição.',
+  'cabine|ramo:tcTp': 'TC em curto ou com o secundário aberto gera sobretensão extrema, com risco de explosão e expulsão de óleo/fumaça na cabine. É ocorrência crítica: manter tudo trancado e isolado e despachar com prioridade para a Central de Operações do Grupo A.',
+  'cabine|confirmacao': 'A equipe de média tensão só executa o serviço com endereço/referência corretos, acesso liberado à cabine e um contato responsável no local — sem isso o chamado volta sem execução.',
+  'pid': 'O ressarcimento (PID) não é registrado por telefone por definição operacional: o cliente precisa do laudo de um perito de confiança e deve ir à loja presencial com o equipamento danificado e a nota fiscal — é a loja que orienta e informa os prazos. Abrir registro por telefone criaria uma expectativa de análise que não existe neste canal.'
+};
+
 /* ===== Estado ===== */
-var s = { etapa: 'MENU', cat: '', tipo: '', passo: 0, respostas: [] };
+var s = { etapa: 'MENU', cat: '', tipo: '', passo: 0, respostas: [], pend: null, treino: (function () { try { return localStorage.getItem('enelTreino') === '1'; } catch (e) { return false; } })() };
 
 var app = function () { return document.getElementById('app'); };
+
+/* ===== Modo Treinamento ===== */
+function toggleTreino() {
+  s.treino = !s.treino;
+  try { localStorage.setItem('enelTreino', s.treino ? '1' : '0'); } catch (e) {}
+  s.pend = null;
+  atualizarTreinoUI();
+  render();
+}
+
+function atualizarTreinoUI() {
+  const b = document.getElementById('treinoBtn');
+  if (!b) return;
+  b.textContent = s.treino ? '🎓 Modo Treinamento: ATIVO' : '🎓 Modo Treinamento: Desligado';
+  b.className = s.treino ? 'treino-on' : 'treino-off';
+}
+
+function treinoDica(chave) {
+  if (!s.treino) return '';
+  const txt = PORQUE[chave];
+  return txt ? '<div class="treino-banner">🎓 <b>Por que esta etapa existe?</b> ' + txt + '</div>' : '';
+}
+
+function porqueDe(chave) {
+  return PORQUE[chave] || '';
+}
+
+function sondLabel(sub, valor) {
+  const item = CABINE_SONDAGEM.filter(function (x) { return x.sub === sub; })[0];
+  if (!item) return valor;
+  const achou = item.opcoes.filter(function (o) { return o[1] === valor; });
+  return achou.length ? achou[0][0] : valor;
+}
+
+function renderFeedback() {
+  const p = s.pend;
+  if (!p) { voltarMenu(); return; }
+  if (p.tipo === 'FLUXO') renderFeedbackFluxo();
+  else if (p.tipo === 'PID') renderFeedbackPid();
+  else renderFeedbackCabine();
+}
+
+function renderFeedbackFluxo() {
+  const f = FLUXOS[s.tipo];
+  const passo = f.passos[s.passo];
+  const opt = passo.opcoes[s.pend.i];
+  const total = f.passos.length;
+  const ultimo = s.passo + 1 >= total;
+  const porque = PORQUE['fluxo|' + s.tipo + '|' + s.passo] || 'Registrar essa informação é essencial para o despacho correto e para o resumo do CRM.';
+  let orient = f.orient;
+  if (f.condOrient) {
+    const testadas = s.respostas.concat([{ campo: passo.campo, valor: s.pend.valor }]);
+    const achou = testadas.some(function (r) { return r.campo === f.condOrient.campo && r.valor === f.condOrient.valor; });
+    if (achou) orient = f.condOrient.texto;
+  }
+  const fala = ultimo ? orient : f.passos[s.passo + 1].pergunta;
+  const legenda = ultimo ? 'Fala de encerramento — leia ao cliente' : 'Próxima fala — leia ao cliente em voz alta';
+  app().innerHTML = `
+    <span class="badge" style="background:#6d28d9;">🎓 MODO TREINAMENTO</span>
+    <h3 style="margin-top:8px;">${f.nome}</h3>
+    <p style="font-size:13px;color:#555;margin-top:6px;">Pergunta ${s.passo + 1} de ${total} — gabarito da sua resposta</p>
+    <div class="treino-box">
+      <div class="treino-echo">Sua escolha: <b>“${opt[0]}”</b><br><span style="font-size:11.5px;color:#6d28d9;">Registro no CRM → ${passo.campo}: ${opt[1]}</span></div>
+      <div class="treino-fala"><span class="tag">💬 ${legenda}</span>“${fala}”</div>
+      <div class="treino-porque"><b>🧠 Por que essa pergunta é feita?</b><br>${porque}</div>
+    </div>
+    <div class="treino-acoes">
+      <button class="retry" onclick="refazerFeedback()">🔁 Refazer a escolha</button>
+      <button class="ok" onclick="continuarFeedback()">Entendi, continuar ➡️</button>
+    </div>
+  `;
+}
+
+function renderFeedbackCabine() {
+  const p = s.pend;
+  if (!p) { voltarMenu(); return; }
+  let chave = '', eco = '', legenda = 'Confirme com o cliente — fala de sondagem', fala = '';
+  if (p.acao === 'SOND') {
+    chave = 'cabine|' + p.sub;
+    eco = sondLabel(p.sub, p.valor);
+    const proxItem = CABINE_SONDAGEM.filter(function (x) { return x.sub === p.prox; })[0];
+    fala = proxItem ? proxItem.fala : 'Registro concluído. Peça agora ao responsável técnico que descreva o que ocorreu na cabine para escolher o bloco técnico correto.';
+    legenda = proxItem ? 'Próxima fala — leia ao cliente em voz alta' : 'Orientação interna do passo';
+  } else if (p.acao === 'RAMO') {
+    const rm = CABINE_RAMOS[p.chave];
+    chave = 'cabine|ramo:' + p.chave;
+    eco = rm.ico + ' ' + rm.titulo;
+    fala = rm.sondagem;
+    legenda = 'Confirme com o cliente — fala de sondagem deste bloco';
+  }
+  const porque = PORQUE[chave] || 'Registrar essa informação é essencial para o despacho correto e para o resumo do CRM.';
+  app().innerHTML = `
+    <span class="badge" style="background:#6d28d9;">🎓 MODO TREINAMENTO</span>
+    <h3 style="margin-top:8px;">🏢 Grupo A / Cabine Primária — gabarito</h3>
+    <div class="treino-box">
+      <div class="treino-echo">Sua escolha: <b>“${eco}”</b></div>
+      <div class="treino-fala"><span class="tag">💬 ${legenda}</span>“${fala}”</div>
+      <div class="treino-porque"><b>🧠 Por que essa pergunta é feita?</b><br>${porque}</div>
+    </div>
+    <div class="treino-acoes">
+      <button class="retry" onclick="refazerFeedback()">🔁 Refazer a escolha</button>
+      <button class="ok" onclick="continuarFeedback()">Entendi, continuar ➡️</button>
+    </div>
+  `;
+}
+
+function renderFeedbackPid() {
+  app().innerHTML = `
+    <span class="badge" style="background:#6d28d9;">🎓 MODO TREINAMENTO</span>
+    <h3 style="margin-top:8px;">Ressarcimento de Danos Elétricos (PID) — gabarito</h3>
+    <div class="treino-box">
+      <div class="treino-echo">Sua escolha: <b>“Informar e encerrar”</b> — sem abrir registro no CRM.</div>
+      <div class="treino-fala"><span class="tag">💬 Fala correta do agente</span>“Siga a fala exibida na tela anterior, oriente a ida à loja presencial com laudo, equipamento e nota fiscal, e encerre sem prometer prazos.”</div>
+      <div class="treino-porque"><b>🧠 Por que não abrimos registro por telefone?</b><br>${porqueDe('pid')}</div>
+    </div>
+    <div class="treino-acoes">
+      <button class="retry" onclick="refazerFeedback()">🔁 Voltar</button>
+      <button class="ok" onclick="continuarFeedback()">Entendi, encerrar ➡️</button>
+    </div>
+  `;
+}
+
+function continuarFeedback() {
+  const p = s.pend;
+  if (!p) { voltarMenu(); return; }
+  s.pend = null;
+  if (p.tipo === 'FLUXO') { avancarFluxo(p.valor, p.i); return; }
+  if (p.tipo === 'PID') { voltarMenu(); return; }
+  if (p.acao === 'SOND') { s.cab.resp[p.campo] = p.valor; s.cab.sub = p.prox; renderCabine(); }
+  else if (p.acao === 'RAMO') { cabAplicarRamo(p.chave); }
+}
+
+function refazerFeedback() {
+  const p = s.pend;
+  s.pend = null;
+  if (!p) { voltarMenu(); return; }
+  render();
+}
+
+function pidEncerrar() {
+  if (s.treino) {
+    s.pend = { tipo: 'PID' };
+    renderFeedback();
+    return;
+  }
+  voltarMenu();
+}
 
 function render() {
   if (s.etapa === 'MENU') renderMenu();
@@ -683,8 +897,10 @@ function renderMenu() {
   const itens = CATEGORIAS.map((c, i) => `
         <button class="${c.perigo ? 'emer' : ''}" onclick="escolherCategoria('${c.chave}')">${c.ico} ${i + 1}. ${c.nome}<br><span style="font-size:11px;font-weight:normal;opacity:.9">${c.desc}</span></button>
       `).join('');
+  const treinoBanner = s.treino ? '<div class="treino-banner">🎓 <b>Modo Treinamento ativo.</b> Simule o atendimento: após cada resposta você verá a <b>fala correta</b> do agente e o <b>porquê</b> da pergunta antes de continuar.</div>' : '';
   app().innerHTML = `
     <span class="badge">TRIAGEM DE ATENDIMENTO</span>
+    ${treinoBanner}
     <h2 style="margin-top:8px;">Selecione o Motivo do Contato:</h2>
     <div class="speech-box">"Enel, bom dia/boa tarde. Meu nome é Lorena, com quem eu falo? Em que posso ajudar hoje?"</div>
     <div class="btn-group">
@@ -806,6 +1022,7 @@ function renderCabine() {
   if (sub === 'identificar') {
     cab('1. Saudações e identificação do cliente', `
       <div class="speech-box">"Enel, bom dia/boa tarde. Meu nome é Lorena, com quem eu falo?"<br><br>"Compreendi, [Nome do Cliente]. Por se tratar de um cliente atendido em Média/Alta Tensão, vou registrar o atendimento para a nossa Central de Operações do Grupo A. Por favor, confirme o <strong>Razão Social ou Nome do Titular</strong>, o <strong>CNPJ</strong> e o <strong>Número da Instalação/PN</strong> do local."</div>
+      ${treinoDica('cabine|identificar')}
       <div style="margin-top:10px;">
         <label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Razão Social / Nome do Titular:</label>
         <input type="text" id="cab-razao" placeholder="Ex: ABC Indústria e Comércio Ltda." style="width:100%;font-size:12px;padding:6px 10px;" />
@@ -842,6 +1059,7 @@ function renderCabine() {
   // 3. Ramificação por tipo de ocorrência
   if (sub === 'ramo') {
     cab('3. Ramificação por tipo de ocorrência — selecione o bloco correspondente ao relato técnico do cliente:', `
+      ${treinoDica('cabine|ramo')}
       <div class="btn-group">
         ${Object.keys(CABINE_RAMOS).map(k => {
           const rm = CABINE_RAMOS[k];
@@ -876,6 +1094,7 @@ function renderCabine() {
   if (sub === 'confirmacao') {
     cab('4. Confirmação de dados e acesso à subestação', `
       <div class="speech-box">"Para garantir o atendimento rápido da equipe de Alta Tensão, por favor confirme: 1. O endereço completo da empresa e um ponto de referência principal? 2. O responsável técnico/eletricista estará no local para acompanhar e dar acesso à cabine primária? 3. Nome e telefone celular direto do contato responsável no local?"</div>
+      ${treinoDica('cabine|confirmacao')}
       <div style="margin-top:10px;">
         <label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Endereço completo e ponto de referência:</label>
         <input type="text" id="cab-endereco" placeholder="Ex: Av. Industrial, 1200 - Galpão 4" style="width:100%;font-size:12px;padding:6px 10px;" />
@@ -952,12 +1171,26 @@ function cabProsseguir() {
 }
 
 function cabResp(campo, valor, prox) {
+  if (s.treino) {
+    s.pend = { tipo: 'CABINE', acao: 'SOND', campo: campo, valor: valor, prox: prox, sub: s.cab.sub };
+    renderFeedback();
+    return;
+  }
   s.cab.resp[campo] = valor;
   s.cab.sub = prox;
   renderCabine();
 }
 
 function cabRamo(k) {
+  if (s.treino) {
+    s.pend = { tipo: 'CABINE', acao: 'RAMO', chave: k };
+    renderFeedback();
+    return;
+  }
+  cabAplicarRamo(k);
+}
+
+function cabAplicarRamo(k) {
   const rm = CABINE_RAMOS[k];
   s.cab.resp['SITUAÇÃO RELATADA'] = rm.situacao;
   s.cab.resp['RISCO FÍSICO / ESTRUTURAL'] = rm.risco;
@@ -1041,6 +1274,7 @@ function renderPergunta() {
     <h3 style="margin-top:8px;">${f.nome}</h3>
     <p style="font-size:13px;color:#555;margin-top:6px;">Pergunta ${s.passo + 1} de ${f.passos.length}</p>
     <div class="speech-box">"${passo.pergunta}"</div>
+    ${s.treino ? '<p style="font-size:12px;color:#6d28d9;margin:8px 0 0;">🎓 Modo treinamento: escolha a resposta que o cliente deu. Em seguida, revise a fala correta e o porquê da pergunta antes de continuar.</p>' : ''}
     <div class="btn-group">
       ${passo.opcoes.map((o, i) => `
         <button class="${o[1].indexOf('VÍTIMA') > -1 || o[1] === 'SIM' && (passo.campo === 'Chamas ativas' || passo.campo === 'Fios no chão' || passo.campo === 'Bloqueio de via' || passo.campo === 'Sinais de manipulação' || passo.campo === 'RISCO DE INCÊNDIO/SEGURANÇA') ? 'emer' : ''}" onclick="responder('${o[1].replace(/'/g, '')}', ${i})">${o[0]}</button>
@@ -1050,6 +1284,15 @@ function renderPergunta() {
 }
 
 function responder(valor, i) {
+  if (s.treino) {
+    s.pend = { tipo: 'FLUXO', valor: valor, i: i };
+    renderFeedback();
+    return;
+  }
+  avancarFluxo(valor, i);
+}
+
+function avancarFluxo(valor, i) {
   const f = FLUXOS[s.tipo];
   const passo = f.passos[s.passo];
   s.respostas.push({ campo: passo.campo, valor: valor });
@@ -1121,6 +1364,7 @@ function renderPid() {
     <h3 style="margin-top:8px;">💻 Orientação ao Cliente (Ressarcimento)</h3>
     <div class="speech-box">"Entendido. Para tratar de ressarcimento de danos elétricos, o(a) senhor(a) deve fazer o laudo do equipamento com um perito de confiança e ir até a loja presencial, levando o laudo, o equipamento danificado e a nota fiscal. Não abrimos registro por telefone: apenas informamos que o atendimento é feito na loja, onde serão passadas as orientações e os prazos."</div>
     <div class="note">⚠️ Este atendimento não gera registro no CRM - apenas orientação e encaminhamento à loja.</div>
+    ${treinoDica('pid')}
     <div class="ref-note">🔒 Consulta interna do agente: não repasse os prazos do processo na ligação. A loja presencial informa as orientações e os prazos ao cliente.<br>📎 Fonte: ANEEL REN 1.000/2021 e enel.com.br (Solicitação de Ressarcimento).</div>
     <details class="ref-box">
       <summary>🧾 Fluxo oficial do pedido de ressarcimento (consulta)</summary>
@@ -1134,7 +1378,7 @@ function renderPid() {
       </div>
     </details>
     <div class="btn-group">
-      <button class="ok" onclick="voltarMenu()" style="text-align:center;">✅ Informar e encerrar</button>
+      <button class="ok" onclick="pidEncerrar()" style="text-align:center;">✅ Informar e encerrar</button>
     </div>
   `;
 }
@@ -1147,6 +1391,7 @@ function copiarTexto() {
 }
 
 render();
+atualizarTreinoUI();
 
 /* ===== Atualização automática (sem precisar dar F5) =====
    Verifica a cada poucos segundos se o arquivo mudou. Quando o conteúdo
