@@ -255,6 +255,49 @@
       </div>
     </details>
 
+    <!-- CARD TC/TP (TRANSFORMADORES DE MEDIÇÃO) -->
+    <details class="card">
+      <summary>⚡ TC/TP — Transformadores de Medição (Grupo A)</summary>
+      <div class="card-body">
+      <p class="cab-intro">Falhas em <strong>TCs (Transformadores de Corrente)</strong> ou <strong>TPs (Transformadores de Potencial)</strong> são ocorrências críticas no sistema de medição/proteção de <strong>Média/Alta Tensão (Grupo A)</strong>. Esses equipamentos abaixam a corrente e a tensão da rede (ex.: 13,8 kV) para níveis seguros que o medidor ou os relés de proteção conseguem ler.</p>
+      <details class="cat-item">
+        <summary>🚨 Sintomas e riscos</summary>
+        <div class="cat-body">
+          <div class="faq-item"><strong>Risco grave de explosão (especialmente no TC)</strong> — TC em curto ou com o secundário aberto gera sobretensão extrema, podendo explodir ou expelir óleo/fumaça dentro da cabine primária.</div>
+          <div class="faq-item"><strong>Falta de fase ou oscilação na medição</strong> — o medidor de memória de massa para de registrar uma ou mais fases ou apresenta erro de medição.</div>
+          <div class="faq-item"><strong>Atuação indevida da proteção</strong> — o relé de proteção lê valor incorreto e desarma o disjuntor geral, deixando o empreendimento sem luz.</div>
+          <div class="faq-item"><strong>Cheiro de queimado e fumaça na cabine</strong> — a isolação de resina/epóxi ou óleo do TC/TP derrete sob aquecimento severo.</div>
+        </div>
+      </details>
+      <details class="cat-item">
+        <summary>💬 Sondagem técnica</summary>
+        <div class="cat-body">
+          <div class="faq-item"><strong>Risco físico:</strong> “Há presença de fumaça, fogo, cheiro forte de queimado ou vazamento de óleo na caixa de medição/cabine?”</div>
+          <div class="faq-item"><strong>Situação da energia:</strong> “A empresa está totalmente sem luz ou com perda de fase?”</div>
+          <div class="faq-item"><strong>Inspeção técnica:</strong> “O eletricista do local confirma que o defeito está nos TCs/TPs da medição da Enel ou nos equipamentos de proteção do cliente?”</div>
+        </div>
+      </details>
+      <details class="cat-item">
+        <summary>🗣️ Script de orientação e segurança</summary>
+        <div class="cat-body">
+          <div class="speech-box">“Compreendi, [Nome do Cliente]. Por se tratar de uma falha nos transformadores de medição/proteção (TC/TP) em Média Tensão, vou direcionar a ocorrência com prioridade para a nossa Central de Operações de Alta Tensão. Por medida de segurança, mantenha a cabine primária e o centro de medição trancados e isolados. Não permita a aproximação de pessoas, pois equipamentos de medição em curto-circuito representam alto risco elétrico. Aguarde a chegada da nossa equipe técnica de Média Tensão.”</div>
+        </div>
+      </details>
+      <details class="cat-item">
+        <summary>📋 Modelo CRM</summary>
+        <div class="cat-body">
+          <div class="crm-tpl">[OCORRÊNCIA EM MÉDIA TENSÃO - GRUPO A / MEDIÇÃO]
+- EQUIPAMENTO AFETADO: [TC (Transformador de Corrente) / TP (Transformador de Potencial)]
+- PROBLEMA: [Em curto-circuito / Queimado / Fumaça na caixa de medição / Erro no medidor]
+- IMPACTO NO FORNECIMENTO: [Falta total de energia / Perda de fase / Medição interrompida]
+- RISCO DE SEGURANÇA: [Sim - Fumaça/Superaquecimento na cabine / Não]
+- CONTATO DO TÉCNICO NO LOCAL: [Nome do Eletricista + Telefone]
+- ORIENTAÇÃO PRESTADA: Cliente orientado a manter a cabine primária trancada, isolar a área e aguardar a equipe de Média Tensão.</div>
+        </div>
+      </details>
+      </div>
+    </details>
+
     <!-- CARD GRUPO A x GRUPO B (75 kW) -->
     <details class="card">
       <summary>📏 Grupo A × Grupo B (limite de 75 kW)</summary>
@@ -353,6 +396,7 @@
             <li><strong>Chave fusível "canela" aberta / fusível NH queimado</strong> — isolar a área abaixo do poste.</li>
             <li><strong>Fumaça, vazamento de óleo ou ruído no transformador</strong> — manter a subestação trancada e afastar pessoas.</li>
             <li><strong>Falha no sistema de medição (TCs/TPs/telemetria)</strong> — preservar lacres e equipamentos.</li>
+            <li><strong>TC/TP em curto ou queimado</strong> — risco de explosão na cabine: manter trancada e isolada, despacho prioritário.</li>
           </ul>
         </div>
       </details>
@@ -695,6 +739,20 @@ var CABINE_RAMOS = {
     sondagem: 'O medidor de memória de massa/telemetria está com o visor apagado, travado ou o lacre da caixa de medição foi rompido?',
     orient: 'Será registrada a ordem de verificação técnica da medição de Média Tensão. Manter os lacres e os equipamentos de medição (TCs e TPs) preservados.',
     risco: 'Não'
+  },
+  tcTp: {
+    ico: '⚡',
+    titulo: 'E. Falha ou Queima de TC/TP (Transformadores de Medição)',
+    situacao: 'FALHA/QUEIMA DE TC OU TP (TRANSFORMADORES DE MEDIÇÃO)',
+    sondagem: 'Há presença de fumaça, fogo, cheiro forte de queimado ou vazamento de óleo na caixa de medição/cabine? O eletricista do local confirma que o defeito está nos TCs/TPs da medição da Enel ou nos equipamentos de proteção do cliente?',
+    orient: 'SEGURANÇA: um TC em curto-circuito ou com o circuito secundário aberto gera sobretensão extrema e pode explodir ou expelir óleo/fumaça dentro da cabine. Manter a cabine primária e o centro de medição TRANCADOS e isolados e não permitir a aproximação de pessoas. Despacho com prioridade para a Central de Operações do Grupo A.',
+    risco: 'Sim - Fumaça/Superaquecimento na cabine',
+    perigo: true,
+    campos: [
+      { id: 'tctp-equip', campo: 'EQUIPAMENTO AFETADO', label: 'Equipamento afetado:', opcoes: ['TC (Transformador de Corrente)', 'TP (Transformador de Potencial)'] },
+      { id: 'tctp-problema', campo: 'PROBLEMA', label: 'Problema:', opcoes: ['Em curto-circuito', 'Queimado', 'Fumaça na caixa de medição', 'Erro no medidor'] },
+      { id: 'tctp-impacto', campo: 'IMPACTO NO FORNECIMENTO', label: 'Impacto no fornecimento:', opcoes: ['Falta total de energia', 'Perda de fase', 'Medição interrompida'] }
+    ]
   }
 };
 
@@ -797,9 +855,16 @@ function renderCabine() {
   // Tela do ramo escolhido (sondagem + orientação)
   const rm = CABINE_RAMOS[sub];
   if (rm) {
+    const campos = rm.campos ? rm.campos.map(c => `
+      <label style="font-size:12px;color:#555;display:block;margin:8px 0 3px;">${c.label}</label>
+      <select id="${c.id}" style="width:100%;font-size:12px;padding:6px 10px;">
+        ${c.opcoes.map(o => `<option>${o}</option>`).join('')}
+      </select>
+    `).join('') : '';
     cab(`${rm.ico} ${rm.titulo}`, `
       <div class="speech-box">"${rm.sondagem}"</div>
       <div class="golden" style="margin-top:12px;"><strong>Orientação:</strong> ${rm.orient}</div>
+      ${campos ? `<div style="margin-top:12px;">${campos}</div>` : ''}
       <div class="btn-group">
         <button class="ok" onclick="cabParaConfirmacao()" style="text-align:center;">➡️ Continuar</button>
       </div>
@@ -829,7 +894,24 @@ function renderCabine() {
   // 5. Mensagem final e encerramento (CRM)
   if (sub === 'final') {
     const g = c => resp[c] || '[a informar]';
-    const tpl = `[OCORRÊNCIA GRUPO A - MÉDIA / ALTA TENSÃO]
+    const ehTcTp = resp['EQUIPAMENTO AFETADO'] !== undefined;
+    const tpl = ehTcTp
+      ? `[OCORRÊNCIA EM MÉDIA TENSÃO - GRUPO A / MEDIÇÃO]
+--------------------------------------------------
+- RAZÃO SOCIAL / TITULAR: ${g('RAZÃO SOCIAL / TITULAR')}
+- CNPJ / INSTALAÇÃO (PN): ${g('CNPJ')} / ${g('Nº INSTALAÇÃO / PN')}
+- TIPO DE ESTRUTURA: ${g('TIPO DE ESTRUTURA')}
+- EQUIPAMENTO AFETADO: ${g('EQUIPAMENTO AFETADO')}
+- PROBLEMA: ${g('PROBLEMA')}
+- IMPACTO NO FORNECIMENTO: ${g('IMPACTO NO FORNECIMENTO')}
+- RISCO DE SEGURANÇA: ${g('RISCO FÍSICO / ESTRUTURAL')}
+- REDE EXTERNA AFETADA: ${g('REDE EXTERNA AFETADA')}
+- CONTATO DO TÉCNICO NO LOCAL: ${g('RESPONSÁVEL TÉCNICO NO LOCAL')} - ${g('TELEFONE DO CONTATO')}
+- ENDEREÇO COMPLETO / REFERÊNCIA: ${g('ENDEREÇO + REFERÊNCIA')}
+- ORIENTAÇÃO PRESTADA: Cliente orientado a manter a cabine primária trancada, isolar a área e aguardar a equipe de Média Tensão.
+--------------------------------------------------
+- ENCAMINHAMENTO: Despacho prioritário para Central de Operações do Grupo A (Alta Tensão).`
+      : `[OCORRÊNCIA GRUPO A - MÉDIA / ALTA TENSÃO]
 --------------------------------------------------
 - RAZÃO SOCIAL / TITULAR: ${g('RAZÃO SOCIAL / TITULAR')}
 - CNPJ / INSTALAÇÃO (PN): ${g('CNPJ')} / ${g('Nº INSTALAÇÃO / PN')}
@@ -884,9 +966,17 @@ function cabRamo(k) {
 }
 
 function cabParaConfirmacao() {
+  const rm = CABINE_RAMOS[s.cab.sub];
+  if (rm && rm.campos) {
+    rm.campos.forEach(c => {
+      const sel = document.getElementById(c.id);
+      if (sel) s.cab.resp[c.campo] = sel.options[sel.selectedIndex].text;
+    });
+  }
   s.cab.sub = 'confirmacao';
   renderCabine();
 }
+
 
 function cabFinalizar() {
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
